@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import random
+import string
 
 
 class UserProfile(models.Model):
@@ -20,16 +22,31 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} ({self.role})"
     
+    def generate_student_id(self):
+        """Generate a unique student ID starting with STU"""
+        while True:
+            # Generate random 6-digit number
+            random_number = ''.join(random.choices(string.digits, k=6))
+            student_id = f"STU{random_number}"
+            
+            # Check if this ID already exists
+            if not UserProfile.objects.filter(student_id=student_id).exists():
+                return student_id
+
 
 @receiver(post_save, sender=User)
 def create_user_profile_signal(sender, instance, created, **kwargs):
     if created:
         # Create profile for new users
         role = 'admin' if instance.is_superuser else 'student'
-        UserProfile.objects.get_or_create(
+        profile, profile_created = UserProfile.objects.get_or_create(
             user=instance,
             defaults={'role': role}
         )
+        # Generate student_id for student profiles if not already set
+        if profile_created and role == 'student' and not profile.student_id:
+            profile.student_id = profile.generate_student_id()
+            profile.save()
 
 
 class Scenario(models.Model):

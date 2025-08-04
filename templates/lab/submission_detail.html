@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Submission Detail - Requirements Lab{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-8">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 theme-transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ submission.scenario.title }}</h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">
+                        Submission by {{ submission.student.get_full_name|default:submission.student.username }}
+                    </p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-sm font-medium
+                    {% if submission.status == 'submitted' %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300
+                    {% elif submission.status == 'feedback_received' %}bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300
+                    {% else %}bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300{% endif %}">
+                    {{ submission.get_status_display }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Requirements Display -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 theme-transition">
+            <h2 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Requirements Summary</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Functional Requirements -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 theme-transition">
+                    <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-300 mb-4">
+                        Functional Requirements ({{ functional_reqs.count }})
+                    </h3>
+                    <div class="space-y-3">
+                        {% for req in functional_reqs %}
+                        <div class="bg-white dark:bg-gray-700 p-3 rounded border-l-4 border-blue-500 theme-transition">
+                            <h4 class="font-medium text-gray-900 dark:text-white">{{ req.title }}</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ req.description }}</p>
+                            <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full
+                                {% if req.priority == 'high' %}bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300
+                                {% elif req.priority == 'medium' %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300
+                                {% else %}bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300{% endif %}">
+                                {{ req.get_priority_display }}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">No functional requirements</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Non-Functional Requirements -->
+                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 theme-transition">
+                    <h3 class="text-lg font-semibold text-green-900 dark:text-green-300 mb-4">
+                        Non-Functional Requirements ({{ non_functional_reqs.count }})
+                    </h3>
+                    <div class="space-y-3">
+                        {% for req in non_functional_reqs %}
+                        <div class="bg-white dark:bg-gray-700 p-3 rounded border-l-4 border-green-500 theme-transition">
+                            <h4 class="font-medium text-gray-900 dark:text-white">{{ req.title }}</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ req.description }}</p>
+                            <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full
+                                {% if req.priority == 'high' %}bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300
+                                {% elif req.priority == 'medium' %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300
+                                {% else %}bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300{% endif %}">
+                                {{ req.get_priority_display }}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">No non-functional requirements</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Business Requirements -->
+                <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 theme-transition">
+                    <h3 class="text-lg font-semibold text-purple-900 dark:text-purple-300 mb-4">
+                        Business Requirements ({{ business_reqs.count }})
+                    </h3>
+                    <div class="space-y-3">
+                        {% for req in business_reqs %}
+                        <div class="bg-white dark:bg-gray-700 p-3 rounded border-l-4 border-purple-500 theme-transition">
+                            <h4 class="font-medium text-gray-900 dark:text-white">{{ req.title }}</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ req.description }}</p>
+                            <span class="inline-block mt-2 px-2 py-1 text-xs rounded-full
+                                {% if req.priority == 'high' %}bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300
+                                {% elif req.priority == 'medium' %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300
+                                {% else %}bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300{% endif %}">
+                                {{ req.get_priority_display }}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">No business requirements</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        {% if feedbacks %}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 theme-transition">
+            <h2 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Feedback</h2>
+            <div class="space-y-4">
+                {% for feedback in feedbacks %}
+                <div class="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-r-lg theme-transition">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="px-2 py-1 text-xs rounded-full bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
+                                    {{ feedback.get_feedback_type_display }}
+                                </span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ feedback.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white mb-2">{{ feedback.title }}</h3>
+                            <p class="text-gray-700 dark:text-gray-300">{{ feedback.content|linebreaks }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Add Feedback Form (Admin Only) -->
+        {% if feedback_form %}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 theme-transition">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        <i class="fas fa-comment-medical mr-2 text-primary-600 dark:text-primary-400"></i>
+                        Add Feedback
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">Provide constructive feedback to help the student improve their requirements.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-full text-sm font-medium">
+                        <i class="fas fa-clock mr-1"></i>
+                        Pending Review
+                    </span>
+                </div>
+            </div>
+            
+            <form method="post" action="{% url 'add_feedback' submission.pk %}" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ feedback_form.feedback_type.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <i class="fas fa-tag mr-1"></i>
+                            Feedback Type
+                        </label>
+                        <select name="{{ feedback_form.feedback_type.name }}" id="{{ feedback_form.feedback_type.id_for_label }}" 
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <option value="">Select feedback type</option>
+                            <option value="general">General Comments</option>
+                            <option value="clarification">Request for Clarification</option>
+                            <option value="improvement">Suggestion for Improvement</option>
+                        </select>
+                        {% if feedback_form.feedback_type.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ feedback_form.feedback_type.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ feedback_form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <i class="fas fa-heading mr-1"></i>
+                            Feedback Title
+                        </label>
+                        <input type="text" name="{{ feedback_form.title.name }}" id="{{ feedback_form.title.id_for_label }}" 
+                               value="{{ feedback_form.title.value|default:'' }}"
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="Enter a clear, descriptive title">
+                        {% if feedback_form.title.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ feedback_form.title.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="{{ feedback_form.content.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-comment mr-1"></i>
+                        Feedback Content
+                    </label>
+                    <textarea name="{{ feedback_form.content.name }}" id="{{ feedback_form.content.id_for_label }}" rows="6"
+                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                              placeholder="Provide detailed, constructive feedback that will help the student improve their requirements. Be specific about what was done well and what could be improved.">{{ feedback_form.content.value|default:'' }}</textarea>
+                    {% if feedback_form.content.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ feedback_form.content.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                            <i class="fas fa-info-circle"></i>
+                            <span>This feedback will be sent to the student and update the submission status.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <a href="{% url 'admin_submissions' %}" 
+                           class="px-6 py-3 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Back to Submissions
+                        </a>
+                        <button type="submit" 
+                                class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg font-medium">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Submit Feedback
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* Style form fields */
+select, input[type="text"], textarea {
+    @apply form-input;
+}
+</style>
+{% endblock %}

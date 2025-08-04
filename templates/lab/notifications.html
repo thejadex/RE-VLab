@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - Requirements Lab{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Notifications</h1>
+            <p class="text-gray-600 mt-2">Stay updated with your latest activities</p>
+        </div>
+        
+        {% if page_obj %}
+        <div class="space-y-4">
+            {% for notification in page_obj %}
+            <div class="border border-gray-200 rounded-lg p-4 {% if not notification.is_read %}bg-blue-50{% endif %}">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900">{{ notification.title }}</h3>
+                        <p class="text-gray-600 mt-1">{{ notification.message }}</p>
+                        <p class="text-sm text-gray-500 mt-2">{{ notification.created_at|timesince }} ago</p>
+                    </div>
+                    {% if notification.link %}
+                    <a href="{{ notification.link }}" 
+                       class="text-indigo-600 hover:text-indigo-800 ml-4">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="mt-8 flex items-center justify-between">
+            <div class="text-sm text-gray-700">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} notifications
+            </div>
+            <div class="flex space-x-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" 
+                   class="px-3 py-2 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                    Previous
+                </a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" 
+                   class="px-3 py-2 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                    Next
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-bell text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No notifications</h3>
+            <p class="text-gray-500">You're all caught up! New notifications will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

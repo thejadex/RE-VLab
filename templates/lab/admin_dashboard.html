@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - RE VLab{% endblock %}
+
+{% block content %}
+<div class="flowing-bg min-h-screen -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8">
+    <div class="flowing-lines opacity-20"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto space-y-8">
+        <!-- Welcome Header -->
+        <div class="modern-card p-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div class="mb-6 lg:mb-0">
+                    <h1 class="text-4xl font-bold text-primary-900 dark:text-white mb-2">
+                        Admin Dashboard
+                    </h1>
+                    <p class="text-xl text-primary-600 dark:text-primary-400">
+                        Manage scenarios, review submissions, and monitor student progress
+                    </p>
+                    <div class="mt-4 flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-sm text-primary-500 dark:text-primary-400">System Status: Online</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-users text-primary-400"></i>
+                            <span class="text-sm text-primary-500 dark:text-primary-400">{{ total_students|default:0 }} Active Students</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="{% url 'create_scenario' %}" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Scenario
+                    </a>
+                    <a href="{% url 'admin_submissions' %}" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-clipboard-list mr-2"></i>
+                        Review Submissions
+                        {% if pending_reviews > 0 %}
+                        <span class="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                            {{ pending_reviews }}
+                        </span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="modern-card p-6 hover:scale-105 transition-all duration-300">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-project-diagram text-white text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ total_scenarios|default:0 }}</div>
+                        <div class="text-sm text-primary-600 dark:text-primary-400">Total Scenarios</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modern-card p-6 hover:scale-105 transition-all duration-300">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-users text-white text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ total_students|default:0 }}</div>
+                        <div class="text-sm text-primary-600 dark:text-primary-400">Active Students</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modern-card p-6 hover:scale-105 transition-all duration-300">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-file-alt text-white text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ total_submissions|default:0 }}</div>
+                        <div class="text-sm text-primary-600 dark:text-primary-400">Total Submissions</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modern-card p-6 hover:scale-105 transition-all duration-300">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-clock text-white text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ pending_reviews|default:0 }}</div>
+                        <div class="text-sm text-primary-600 dark:text-primary-400">Pending Reviews</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Recent Submissions -->
+            <div class="lg:col-span-2 modern-card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-primary-900 dark:text-white">Recent Submissions for Review</h3>
+                    <a href="{% url 'admin_submissions' %}" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
+                        View all submissions →
+                    </a>
+                </div>
+                
+                {% if recent_submissions %}
+                <div class="space-y-4">
+                    {% for submission in recent_submissions %}
+                    <div class="flex items-center justify-between p-4 bg-primary-50 dark:bg-primary-800/30 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-800/50 transition-colors">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center text-white font-medium">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-primary-900 dark:text-white">{{ submission.scenario.title }}</h4>
+                                <p class="text-sm text-primary-500 dark:text-primary-400">
+                                    by {{ submission.student.get_full_name|default:submission.student.username }}
+                                    • {{ submission.submitted_at|timesince }} ago
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300">
+                                Pending Review
+                            </span>
+                            <a href="{% url 'submission_detail' submission.pk %}" 
+                               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-eye mr-1"></i>Review
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-12">
+                    <div class="w-16 h-16 bg-primary-100 dark:bg-primary-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-clipboard-check text-primary-400 text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-medium text-primary-900 dark:text-white mb-2">All caught up!</h4>
+                    <p class="text-primary-500 dark:text-primary-400">No submissions pending review at the moment.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar Content -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="modern-card p-6">
+                    <h3 class="text-lg font-bold text-primary-900 dark:text-white mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <a href="{% url 'create_scenario' %}" class="flex items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors group">
+                            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-xl flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-plus text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-primary-900 dark:text-white text-sm">Create Scenario</div>
+                                <div class="text-xs text-primary-500 dark:text-primary-400">Add new learning scenario</div>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'admin_scenarios' %}" class="flex items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors group">
+                            <div class="w-8 h-8 bg-purple-100 dark:bg-purple-800 rounded-xl flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-cogs text-purple-600 dark:text-purple-400"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-primary-900 dark:text-white text-sm">Manage Scenarios</div>
+                                <div class="text-xs text-primary-500 dark:text-primary-400">Edit existing scenarios</div>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'admin_submissions' %}" class="flex items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors group">
+                            <div class="w-8 h-8 bg-green-100 dark:bg-green-800 rounded-xl flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-clipboard-list text-green-600 dark:text-green-400"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-primary-900 dark:text-white text-sm">Review Submissions</div>
+                                <div class="text-xs text-primary-500 dark:text-primary-400">Provide student feedback</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- System Status -->
+                <div class="modern-card p-6">
+                    <h3 class="text-lg font-bold text-primary-900 dark:text-white mb-4">System Status</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-primary-600 dark:text-primary-400">Server Status</span>
+                            <span class="flex items-center text-sm text-green-600 dark:text-green-400">
+                                <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                                Online
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-primary-600 dark:text-primary-400">Database</span>
+                            <span class="flex items-center text-sm text-green-600 dark:text-green-400">
+                                <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                                Connected
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-primary-600 dark:text-primary-400">Last Backup</span>
+                            <span class="text-sm text-primary-500 dark:text-primary-400">2 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="modern-card p-6">
+                    <h3 class="text-lg font-bold text-primary-900 dark:text-white mb-4">Recent Activity</h3>
+                    <div class="space-y-3">
+                        {% for activity in recent_activities %}
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-gradient-to-br {{ activity.color }} rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="{{ activity.icon }} text-white text-xs"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-primary-900 dark:text-white">{{ activity.title }}</p>
+                                <p class="text-xs text-primary-500 dark:text-primary-400">{{ activity.time|timesince }} ago</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-6">
+                            <i class="fas fa-history text-primary-300 dark:text-primary-600 text-2xl mb-2"></i>
+                            <p class="text-sm text-primary-600 dark:text-primary-400">No recent activity</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

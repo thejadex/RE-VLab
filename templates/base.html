@@ -1,0 +1,759 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="{% if request.session.theme == 'dark' %}dark{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RE VLab - Requirements Engineering Virtual Laboratory{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a'
+                        },
+                        accent: {
+                            50: '#fef7ff',
+                            100: '#fdeeff',
+                            200: '#fad5ff',
+                            300: '#f5b3ff',
+                            400: '#ed82ff',
+                            500: '#e052ff',
+                            600: '#c730e8',
+                            700: '#a521c4',
+                            800: '#881ba0',
+                            900: '#6f1a82'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'pulse-notification': 'pulseNotification 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        pulseNotification: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+                            '50%': { transform: 'scale(1.1)', opacity: '0.8' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        
+        /* Flowing background pattern */
+        .flowing-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .flowing-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .flowing-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,400 Q300,200 600,400 T1200,400' stroke='%23e2e8f0' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M0,450 Q300,250 600,450 T1200,450' stroke='%23cbd5e1' stroke-width='1.5' fill='none' opacity='0.2'/%3E%3Cpath d='M0,350 Q300,150 600,350 T1200,350' stroke='%23f1f5f9' stroke-width='3' fill='none' opacity='0.4'/%3E%3Cpath d='M0,500 Q300,300 600,500 T1200,500' stroke='%23e2e8f0' stroke-width='1' fill='none' opacity='0.25'/%3E%3Cpath d='M0,300 Q300,100 600,300 T1200,300' stroke='%23cbd5e1' stroke-width='2.5' fill='none' opacity='0.15'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+        }
+        
+        .dark .flowing-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+        
+        .dark .flowing-lines {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,400 Q300,200 600,400 T1200,400' stroke='%23334155' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M0,450 Q300,250 600,450 T1200,450' stroke='%23475569' stroke-width='1.5' fill='none' opacity='0.2'/%3E%3Cpath d='M0,350 Q300,150 600,350 T1200,350' stroke='%231e293b' stroke-width='3' fill='none' opacity='0.4'/%3E%3Cpath d='M0,500 Q300,300 600,500 T1200,500' stroke='%23334155' stroke-width='1' fill='none' opacity='0.25'/%3E%3Cpath d='M0,300 Q300,100 600,300 T1200,300' stroke='%23475569' stroke-width='2.5' fill='none' opacity='0.15'/%3E%3C/svg%3E");
+        }
+        
+        /* Modern card styling */
+        .modern-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modern-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark .modern-card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            color: white;
+        }
+        
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.18);
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        }
+
+        .btn-secondary {
+            background: none;
+            color: #3b82f6;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-weight: 500;
+            border: 2px solid transparent;
+            background-image: linear-gradient(135deg, #fff, #fff), linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.08);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+            background-image: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%), linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+            color: #2563eb;
+        }
+        
+        /* Moon icon gradient for light mode */
+        .fa-moon {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .dark .fa-moon {
+            background: none;
+            -webkit-text-fill-color: #475569;
+            text-fill-color: #475569;
+        }
+
+        /* Navigation styles */
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        }
+        
+        .dark .nav-glass {
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+        
+        /* Typography */
+        .heading-xl {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+        
+        .heading-lg {
+            font-size: clamp(1.875rem, 3vw, 2.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+        }
+        
+        /* Dark mode text fixes */
+        .dark {
+            color: white;
+        }
+        
+        .dark .text-primary-900 {
+            color: white !important;
+        }
+        
+        .dark .text-primary-800 {
+            color: #f1f5f9 !important;
+        }
+        
+        .dark .text-primary-700 {
+            color: #e2e8f0 !important;
+        }
+        
+        .dark .text-primary-600 {
+            color: #cbd5e1 !important;
+        }
+        
+        .dark .text-primary-500 {
+            color: #94a3b8 !important;
+        }
+        
+        /* Sidebar collapse animation */
+        .sidebar-collapsed {
+            width: 4rem;
+        }
+        
+        .sidebar-collapsed .sidebar-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+        
+        .sidebar-collapsed .sidebar-icon {
+            margin-right: 0;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white" x-data="{ sidebarOpen: false, sidebarCollapsed: false, notificationsOpen: false, profileOpen: false }">
+    <!-- Navigation - Only show for authenticated users -->
+    {% if user.is_authenticated %}
+    <nav class="nav-glass fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Left side -->
+                <div class="flex items-center space-x-4">
+                    <!-- Mobile menu button -->
+                    <button @click="sidebarOpen = !sidebarOpen" 
+                            class="md:hidden p-2 rounded-xl text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800/50 transition-colors">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+
+                    <!-- Logo -->
+                    <a href="{% url 'home' %}" class="flex items-center space-x-3 group">
+                        <div class="relative">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-lg group-hover:shadow-xl transition-all duration-300">
+                                <i class="fas fa-flask text-white"></i>
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-green-500 rounded-full animate-pulse"></div>
+                        </div>
+                        <div class="hidden sm:block">
+                            <h1 class="text-xl font-bold text-primary-900 dark:text-white">RE VLab</h1>
+                            <p class="text-xs text-primary-600 dark:text-primary-400">Requirements Engineering Lab</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Right side -->
+                <div class="flex items-center space-x-3">
+                    {% if user.is_authenticated %}
+                        <!-- Theme Toggle -->
+                        <button onclick="toggleTheme()" 
+                                class="p-3 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800/50 rounded-xl transition-colors">
+                            <i class="fas fa-moon dark:hidden text-lg"></i>
+                            <i class="fas fa-sun hidden dark:inline text-lg"></i>
+                        </button>
+
+                        <!-- Notifications -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" 
+                            class="relative p-3 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800/50 rounded-xl transition-colors">
+                                {% if has_unread_notifications %}
+                                    <i class="fas fa-bell text-lg text-red-500 animate-pulse-notification"></i>
+                                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                                        {{ unread_notifications_count }}
+                                    </span>
+                                {% else %}
+                                    <i class="fas fa-bell text-lg"></i>
+                                {% endif %}
+                            </button>
+
+                            <!-- Notifications Dropdown -->
+                            <div x-show="open" @click.away="open = false" 
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 class="absolute right-0 mt-2 w-80 modern-card z-50">
+                                <div class="p-6 border-b border-primary-200 dark:border-primary-700">
+                                    <h3 class="text-lg font-semibold text-primary-900 dark:text-white">Notifications</h3>
+                                </div>
+                                <div class="max-h-96 overflow-y-auto">
+                                    {% for notification in user.notifications.all|slice:":5" %}
+                                    <a href="{{ notification.link|default:'#' }}" 
+                                       class="block p-4 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors border-b border-primary-100 dark:border-primary-700 last:border-b-0">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                                                    <i class="fas fa-info-circle text-white text-sm"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-primary-900 dark:text-white">{{ notification.title }}</p>
+                                                <p class="text-sm text-primary-600 dark:text-primary-400 mt-1">{{ notification.message }}</p>
+                                                <p class="text-xs text-primary-500 dark:text-primary-500 mt-2">{{ notification.created_at|timesince }} ago</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    {% empty %}
+                                    <div class="p-8 text-center">
+                                        <i class="fas fa-bell-slash text-primary-300 dark:text-primary-600 text-3xl mb-3"></i>
+                                        <p class="text-primary-600 dark:text-primary-400">No notifications yet</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% if user.notifications.exists %}
+                                <div class="p-4 border-t border-primary-200 dark:border-primary-700">
+                                    <a href="{% url 'notifications' %}" 
+                                       class="block text-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium">
+                                        View all notifications
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" 
+                                    class="flex items-center space-x-3 p-2 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-800/50 transition-colors">
+                                <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white font-semibold shadow-lg">
+                                    {{ user.first_name.0|default:user.username.0|upper }}
+                                </div>
+                                <div class="hidden md:block text-left">
+                                    <p class="text-sm font-semibold text-primary-900 dark:text-white">{{ user.get_full_name|default:user.username }}</p>
+                                    <p class="text-xs text-primary-600 dark:text-primary-400">{{ user.userprofile.role|title }}</p>
+                                </div>
+                                <i class="fas fa-chevron-down text-xs text-primary-400"></i>
+                            </button>
+                            
+                            <!-- Profile Dropdown Menu -->
+                            <div x-show="open" @click.away="open = false" 
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 class="absolute right-0 mt-2 w-64 modern-card z-50">
+                                <div class="p-4 border-b border-primary-200 dark:border-primary-700">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white font-semibold">
+                                            {{ user.first_name.0|default:user.username.0|upper }}
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-primary-900 dark:text-white">{{ user.get_full_name|default:user.username }}</p>
+                                            <p class="text-xs text-primary-600 dark:text-primary-400">{{ user.email }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="py-2">
+                                    {% if user.userprofile.role == 'student' %}
+                                    <a href="{% url 'student_dashboard' %}" 
+                                       class="flex items-center px-4 py-3 text-sm text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors">
+                                        <i class="fas fa-tachometer-alt mr-3 text-primary-500"></i>
+                                        Dashboard
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'admin_dashboard' %}" 
+                                       class="flex items-center px-4 py-3 text-sm text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors">
+                                        <i class="fas fa-tachometer-alt mr-3 text-primary-500"></i>
+                                        Dashboard
+                                    </a>
+                                    {% endif %}
+                                    {% if user.userprofile.role == 'admin' %}
+                                    <div class="border-t border-primary-200 dark:border-primary-700 my-2"></div>
+                                    <div class="px-4 py-2">
+                                        <p class="text-xs font-semibold text-primary-500 uppercase tracking-wider">Admin Tools</p>
+                                    </div>
+                                    <a href="{% url 'admin_scenarios' %}" 
+                                       class="flex items-center px-4 py-3 text-sm text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors">
+                                        <i class="fas fa-cog mr-3 text-primary-500"></i>
+                                        Manage Scenarios
+                                    </a>
+                                    <a href="{% url 'admin_submissions' %}" 
+                                       class="flex items-center px-4 py-3 text-sm text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors">
+                                        <i class="fas fa-clipboard-list mr-3 text-primary-500"></i>
+                                        Review Submissions
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <div class="border-t border-primary-200 dark:border-primary-700">
+                                    <a href="{% url 'logout' %}" 
+                                       class="flex items-center px-4 py-3 text-sm text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors">
+                                        <i class="fas fa-sign-out-alt mr-3 text-primary-500"></i>
+                                        Sign out
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Guest Navigation -->
+                        <a href="{% url 'login' %}" class="btn-secondary">Sign In</a>
+                        <a href="{% url 'register' %}" class="btn-primary">Get Started</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Layout -->
+    {% if user.is_authenticated %}
+    <div class="flex min-h-screen pt-16">
+        <!-- Sidebar -->
+        <div class="fixed inset-y-0 left-0 z-40 pt-16 transform transition-transform duration-300 ease-in-out md:translate-x-0"
+     :class="[
+         sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+         sidebarCollapsed ? 'w-16' : 'w-72'
+     ]"
+     x-show="sidebarOpen || window.innerWidth >= 768">
+            
+            <div class="flex flex-col h-full modern-card m-4 mr-0 rounded-r-none">
+                <!-- Sidebar Header -->
+                
+                
+                <!-- Sidebar Navigation -->
+                <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                    {% if user.userprofile.role == 'student' %}
+                    <a href="{% url 'student_dashboard' %}" 
+                       class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center sidebar-icon group-hover:scale-110 transition-transform"
+                             :class="sidebarCollapsed ? 'mr-0' : 'mr-3'">
+                            <i class="fas fa-home text-white text-sm"></i>
+                        </div>
+                        <div x-show="!sidebarCollapsed" x-transition class="sidebar-text">
+                            <div class="font-medium">Dashboard</div>
+                            <div class="text-xs text-primary-500">Overview & progress</div>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'scenario_list' %}" 
+                       class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center sidebar-icon group-hover:scale-110 transition-transform"
+                             :class="sidebarCollapsed ? 'mr-0' : 'mr-3'">
+                            <i class="fas fa-tasks text-white text-sm"></i>
+                        </div>
+                        <div x-show="!sidebarCollapsed" x-transition class="sidebar-text">
+                            <div class="font-medium">Browse Scenarios</div>
+                            <div class="text-xs text-primary-500">Discover new challenges</div>
+                        </div>
+                    </a>
+                    
+                    <div x-show="!sidebarCollapsed" x-transition class="pt-6">
+                        <h3 class="px-4 text-xs font-semibold text-primary-500 uppercase tracking-wider mb-3">My Learning</h3>
+                        <div class="space-y-1">
+                            <a href="{% url 'scenario_list' %}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                                <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-play-circle text-white text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Active Scenarios</div>
+                                    <div class="text-xs text-primary-500">{{ draft_submissions|default:"0" }} in progress</div>
+                                </div>
+                            </a>
+                            <a href="{% url 'scenario_list' %}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-check-circle text-white text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Completed</div>
+                                    <div class="text-xs text-primary-500">{{ completed_submissions|default:"0" }} scenarios</div>
+                                </div>
+                            </a>
+                            <a href="{% url 'notifications' %}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                                <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-comments text-white text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-medium">Feedback</div>
+                                    <div class="text-xs text-primary-500">{{ feedback_received|default:"0" }} new messages</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div x-show="!sidebarCollapsed" x-transition class="pt-6">
+                        <h3 class="px-4 text-xs font-semibold text-primary-500 uppercase tracking-wider mb-3">Resources</h3>
+                        <div class="space-y-1">
+                            <a href="{% url 'srs_document' %}" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                                <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-file-contract text-white text-xs"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">SRS Templates</div>
+                                    <div class="text-xs text-primary-500">Documentation guides</div>
+                                </div>
+                            </a>
+                            <a href="#" class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                                <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-book text-white text-xs"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium">Learning Materials</div>
+                                    <div class="text-xs text-primary-500">Study resources</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- Admin Navigation -->
+                    <a href="{% url 'admin_dashboard' %}" 
+                       class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center sidebar-icon group-hover:scale-110 transition-transform"
+                             :class="sidebarCollapsed ? 'mr-0' : 'mr-3'">
+                            <i class="fas fa-tachometer-alt text-white text-sm"></i>
+                        </div>
+                        <div x-show="!sidebarCollapsed" x-transition class="sidebar-text">
+                            <div class="font-medium">Dashboard</div>
+                            <div class="text-xs text-primary-500">Admin overview</div>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'admin_scenarios' %}" 
+                       class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center sidebar-icon group-hover:scale-110 transition-transform"
+                             :class="sidebarCollapsed ? 'mr-0' : 'mr-3'">
+                            <i class="fas fa-cogs text-white text-sm"></i>
+                        </div>
+                        <div x-show="!sidebarCollapsed" x-transition class="sidebar-text">
+                            <div class="font-medium">Manage Scenarios</div>
+                            <div class="text-xs text-primary-500">Create & edit scenarios</div>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'admin_submissions' %}" 
+                       class="flex items-center px-4 py-3 text-sm font-medium rounded-xl text-primary-700 dark:text-primary-200 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-all duration-200 group">
+                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center sidebar-icon group-hover:scale-110 transition-transform"
+                             :class="sidebarCollapsed ? 'mr-0' : 'mr-3'">
+                            <i class="fas fa-clipboard-list text-white text-sm"></i>
+                        </div>
+                        <div x-show="!sidebarCollapsed" x-transition class="sidebar-text">
+                            <div class="font-medium">Review Submissions</div>
+                            <div class="text-xs text-primary-500">Student submissions</div>
+                        </div>
+                    </a>
+                    {% endif %}
+                </nav>
+                
+                <!-- Sidebar Footer -->
+                <div class="p-4 border-t border-primary-200 dark:border-primary-700">
+                    <div class="flex items-center space-x-3 p-3 rounded-xl bg-primary-50 dark:bg-primary-800/30">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white font-semibold">
+                            {{ user.first_name.0|default:user.username.0|upper }}
+                        </div>
+                        <div x-show="!sidebarCollapsed" x-transition class="flex-1 min-w-0 sidebar-text">
+                            <p class="text-sm font-semibold text-primary-900 dark:text-white truncate">{{ user.get_full_name|default:user.username }}</p>
+                            <p class="text-xs text-primary-600 dark:text-primary-400">{{ user.userprofile.student_id|default:"Admin" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div x-show="sidebarOpen && window.innerWidth < 768" 
+             @click="sidebarOpen = false"
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 md:hidden"></div>
+        {% endif %}
+
+        <!-- Main Content -->
+        {% if user.is_authenticated %}
+        <div class="flex-1"
+            :class="sidebarCollapsed ? 'md:ml-16' : 'md:ml-72'">
+        {% else %}
+        <div class="flex-1 w-full">
+        {% endif %}
+
+            <!-- Modern Floating Messages -->
+            {% if messages %}
+            <div id="messages-container" class="fixed top-6 left-1/2 z-[100] w-full max-w-md -translate-x-1/2 flex flex-col gap-4 items-center pointer-events-none">
+                {% for message in messages %}
+                <div class="pointer-events-auto shadow-2xl animate-fade-in transition-all duration-300
+                    {% if message.tags == 'error' %}bg-gradient-to-r from-red-500 to-red-400 text-white border-red-600{% elif message.tags == 'success' %}bg-gradient-to-r from-green-500 to-green-400 text-white border-green-600{% elif message.tags == 'warning' %}bg-gradient-to-r from-yellow-400 to-yellow-300 text-gray-900 border-yellow-500{% else %}bg-gradient-to-r from-blue-500 to-purple-500 text-white border-blue-600{% endif %}
+                    rounded-xl px-6 py-4 border-l-8 flex items-center gap-3 font-semibold text-base relative">
+                    <span class="flex items-center">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-triangle{% elif message.tags == 'success' %}fa-check-circle{% elif message.tags == 'warning' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-3 text-xl"></i>
+                        {{ message }}
+                    </span>
+                    <button onclick="this.parentElement.style.opacity='0'; setTimeout(()=>this.parentElement.remove(),300);" class="absolute top-2 right-3 text-white/70 hover:text-white text-lg focus:outline-none" aria-label="Dismiss">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            <script>
+            // Auto-hide messages after 5 seconds
+            document.addEventListener('DOMContentLoaded', function() {
+                const container = document.getElementById('messages-container');
+                if (container) {
+                    container.querySelectorAll('div.pointer-events-auto').forEach(alert => {
+                        setTimeout(() => {
+                            alert.style.opacity = '0';
+                            alert.style.transform = 'translateY(-10px)';
+                            setTimeout(() => alert.remove(), 300);
+                        }, 5000);
+                    });
+                }
+            });
+            </script>
+            {% endif %}
+
+            <!-- Page Content -->
+            {% if user.is_authenticated %}
+            <main class="p-4 md:p-6 lg:p-8">
+            {% else %}
+            <main class="w-full">
+            {% endif %}
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                updateThemeOnServer('light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                updateThemeOnServer('dark');
+            }
+        }
+        
+        function updateThemeOnServer(theme) {
+            fetch('{% url "toggle_theme" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ theme: theme })
+            }).catch(console.error);
+        }
+        
+        // Initialize theme from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+            
+            // Auto-hide messages after 5 seconds
+            const alerts = document.querySelectorAll('[class*="bg-red-50"], [class*="bg-green-50"], [class*="bg-yellow-50"], [class*="bg-blue-50"]');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-10px)';
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Requirement - Requirements Lab{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Edit Requirement</h1>
+            <p class="text-gray-600 mt-2">Update the requirement details</p>
+        </div>
+        
+        {% crispy form %}
+        
+        <div class="mt-6 pt-6 border-t border-gray-200">
+            <a href="{% url 'scenario_detail' requirement.submission.scenario.pk %}" 
+               class="text-gray-600 hover:text-gray-800">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Scenario
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

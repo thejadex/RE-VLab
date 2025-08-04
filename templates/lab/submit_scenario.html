@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Scenario - Requirements Lab{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Submit Scenario</h1>
+            <p class="text-gray-600 mt-2">Review your work before final submission</p>
+        </div>
+        
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 class="font-medium text-blue-900">{{ submission.scenario.title }}</h3>
+            <p class="text-blue-700 mt-1">You have {{ submission.requirements.count }} requirements ready for submission.</p>
+        </div>
+        
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-3"></i>
+                <div>
+                    <h4 class="font-medium text-yellow-900">Important Notice</h4>
+                    <p class="text-yellow-700 mt-1">
+                        Once submitted, you will not be able to edit your requirements. 
+                        Please review your work carefully before proceeding.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex space-x-4">
+                <button type="submit" 
+                        class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200">
+                    <i class="fas fa-paper-plane mr-2"></i>Submit for Review
+                </button>
+                <a href="{% url 'scenario_detail' submission.scenario.pk %}" 
+                   class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition duration-200">
+                    Back to Edit
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

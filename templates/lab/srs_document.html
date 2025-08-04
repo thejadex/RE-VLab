@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block title %}SRS Template Guide{% endblock %}
+
+{% block content %}
+
+<!-- Page Indicator -->
+<div class="flex justify-center mt-8 mb-8">
+    <span class="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-gradient-to-r from-primary-700 via-primary-500 to-primary-400 dark:from-primary-900 dark:via-primary-800 dark:to-primary-700 shadow-lg border-2 border-primary-200 dark:border-primary-800">
+        <i class="fas fa-file-alt text-2xl text-white drop-shadow"></i>
+        <span class="text-white font-extrabold text-lg md:text-xl tracking-wide drop-shadow">
+            {{ page_indicator|default:"SRS Template Guide" }}
+        </span>
+    </span>
+</div>
+
+<div class="max-w-5xl mx-auto bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-900 dark:via-gray-800 dark:to-primary-900 p-0 md:p-0 rounded-3xl shadow-2xl mt-8 mb-12 overflow-hidden">
+
+<!-- Compact SRS Header -->
+<div class="max-w-3xl mx-auto mt-6 mb-10 bg-white/80 dark:bg-gray-900/80 rounded-xl shadow-lg px-6 py-6 flex flex-col items-center text-center">
+    <h1 class="text-2xl md:text-3xl font-extrabold text-primary-800 dark:text-primary-100 mb-2 tracking-tight">
+        Software Requirements Specification
+    </h1>
+    <p class="text-primary-700 dark:text-primary-200 text-base md:text-lg mb-1">
+        for <span class="font-semibold">&lt;Project&gt;</span>
+    </p>
+    <p class="text-primary-500 dark:text-primary-300 text-sm mb-1">
+        Version 1.0 approved
+    </p>
+    <p class="text-primary-500 dark:text-primary-300 text-sm mb-1">
+        Prepared by <span class="font-semibold">&lt;author&gt;</span>
+    </p>
+    <p class="text-primary-500 dark:text-primary-300 text-sm mb-1">
+        <span class="font-semibold">&lt;organization&gt;</span>
+    </p>
+    <p class="text-primary-400 dark:text-primary-400 text-xs">
+        &lt;date created&gt;
+    </p>
+</div>
+
+    <!-- Table of Contents -->
+    <div class="bg-white dark:bg-gray-900 px-8 py-8">
+        <h2 class="text-2xl font-bold text-primary-800 dark:text-primary-100 mb-4 text-center">Table of Contents</h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-gray-700 dark:text-gray-200 text-base list-decimal list-inside mx-auto max-w-2xl">
+            <li>Revision History</li>
+            <li>1. Introduction</li>
+            <li>2. Overall Description</li>
+            <li>3. External Interface Requirements</li>
+            <li>4. System Features</li>
+            <li>5. Other Nonfunctional Requirements</li>
+            <li>6. Other Requirements</li>
+            <li>Appendix A: Glossary</li>
+            <li>Appendix B: Analysis Models</li>
+            <li>Appendix C: To Be Determined List</li>
+        </ul>
+    </div>
+
+    <!-- Sections -->
+    <div class="bg-gradient-to-br from-white via-primary-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-8 py-10 grid gap-10 md:grid-cols-2">
+        <section>
+            <h3 class="text-xl font-bold text-primary-700 dark:text-primary-200 mb-3">1. Introduction</h3>
+            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-1">
+                <li>1.1 Purpose</li>
+                <li>1.2 Document Conventions</li>
+                <li>1.3 Intended Audience and Reading Suggestions</li>
+                <li>1.4 Product Scope</li>
+                <li>1.5 References</li>
+            </ul>
+        </section>
+        <section>
+            <h3 class="text-xl font-bold text-primary-700 dark:text-primary-200 mb-3">2. Overall Description</h3>
+            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-1">
+                <li>2.1 Product Perspective</li>
+                <li>2.2 Product Functions</li>
+                <li>2.3 User Classes and Characteristics</li>
+                <li>2.4 Operating Environment</li>
+                <li>2.5 Design and Implementation Constraints</li>
+                <li>2.6 User Documentation</li>
+                <li>2.7 Assumptions and Dependencies</li>
+            </ul>
+        </section>
+        <section>
+            <h3 class="text-xl font-bold text-primary-700 dark:text-primary-200 mb-3">3. External Interface Requirements</h3>
+            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-1">
+                <li>3.1 User Interfaces</li>
+                <li>3.2 Hardware Interfaces</li>
+                <li>3.3 Software Interfaces</li>
+                <li>3.4 Communications Interfaces</li>
+            </ul>
+        </section>
+        <section>
+            <h3 class="text-xl font-bold text-primary-700 dark:text-primary-200 mb-3">4. System Features</h3>
+            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-1">
+                <li>4.1 System Feature 1</li>
+                <li>4.2 System Feature 2 (and so on)</li>
+            </ul>
+        </section>
+        <section>
+            <h3 class="text-xl font-bold text-primary-700 dark:text-primary-200 mb-3">5. Other Nonfunctional Requirements</h3>
+            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-1">
+                <li>5.1 Performance Requirements</li>
+                <li>5.2 Safety Requirements</li>
+                <li>5.3 Security Requirements</li>
+                <li>5.4 Software Quality Attributes</li>
+                <li>5.5 Business Rules</li>
+            </ul>
+        </section>
+        <section>
+            <h3 class="text-xl font-bold text-primary-700 dark:text-primary-200 mb-3">6. Other Requirements</h3>
+        </section>
+        <section class="md:col-span-2">
+            <h3 class="text-xl font-bold text-primary-700 dark:text-primary-200 mb-3">Appendices</h3>
+            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-1">
+                <li>Appendix A: Glossary</li>
+                <li>Appendix B: Analysis Models</li>
+                <li>Appendix C: To Be Determined List</li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- Revision History -->
+    <div class="bg-white dark:bg-gray-900 px-8 py-10">
+        <h2 class="text-2xl font-extrabold text-primary-800 dark:text-primary-100 mb-6 text-center tracking-tight">
+            Revision History
+        </h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-primary-100 dark:border-primary-800">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-primary-700 dark:text-primary-200 uppercase tracking-wider bg-primary-50 dark:bg-primary-900/40 border-b border-primary-100 dark:border-primary-800">
+                            Name
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-primary-700 dark:text-primary-200 uppercase tracking-wider bg-primary-50 dark:bg-primary-900/40 border-b border-primary-100 dark:border-primary-800">
+                            Date
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-primary-700 dark:text-primary-200 uppercase tracking-wider bg-primary-50 dark:bg-primary-900/40 border-b border-primary-100 dark:border-primary-800">
+                            Reason For Changes
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-primary-700 dark:text-primary-200 uppercase tracking-wider bg-primary-50 dark:bg-primary-900/40 border-b border-primary-100 dark:border-primary-800">
+                            Version
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="even:bg-primary-50 odd:bg-white dark:even:bg-primary-900/30 dark:odd:bg-gray-900 hover:bg-primary-100 dark:hover:bg-primary-800 transition">
+                        <td class="px-6 py-3 border-b border-primary-100 dark:border-primary-800 font-medium">
+                            {{ user.get_full_name|default:user.username }}
+                        </td>
+                        <td class="px-6 py-3 border-b border-primary-100 dark:border-primary-800">
+                            {{ today|default:"YYYY-MM-DD" }}
+                        </td>
+                        <td class="px-6 py-3 border-b border-primary-100 dark:border-primary-800">
+                            Initial draft
+                        </td>
+                        <td class="px-6 py-3 border-b border-primary-100 dark:border-primary-800">
+                            1.0
+                        </td>
+                    </tr>
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer link -->
+    <div class="bg-gradient-to-t from-primary-50 via-white to-primary-100 dark:from-gray-900 dark:via-gray-800 dark:to-primary-900 px-8 py-8 text-center rounded-b-3xl">
+        <a href="https://www.iso.org/standard/72024.html" target="_blank"
+           class="inline-block px-6 py-3 bg-primary-600 text-white rounded-xl shadow hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 font-semibold transition">
+            Learn more about SRS standards (ISO/IEC/IEEE 29148)
+        </a>
+    </div>
+</div>
+{% endblock %}

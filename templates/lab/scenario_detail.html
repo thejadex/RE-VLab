@@ -1,0 +1,410 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ scenario.title }} - RE VLab{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-6xl mx-auto p-6">
+        <!-- Breadcrumbs -->
+        <div class="mb-6">
+            <nav class="flex text-sm text-gray-600 dark:text-gray-400">
+                <a href="{% url 'dashboard' %}" class="hover:text-blue-600 dark:hover:text-blue-400">Dashboard</a>
+                <span class="mx-2">></span>
+                <a href="{% url 'scenario_list' %}" class="hover:text-blue-600 dark:hover:text-blue-400">Scenarios</a>
+                <span class="mx-2">></span>
+                <span class="text-gray-900 dark:text-white">{{ scenario.title }}</span>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="space-y-6">
+            <!-- Scenario Details Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <!-- Header with decorative elements -->
+                <div class="flex items-start justify-between mb-6">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-4">
+                            <div class="w-3 h-6 bg-gray-300 rounded"></div>
+                            <div class="w-3 h-6 bg-pink-300 rounded"></div>
+                        </div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{{ scenario.title }}</h1>
+                        <div class="prose prose-gray dark:prose-invert max-w-none">
+                            {{ scenario.description|linebreaks }}
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col space-y-3 ml-6">
+                        {% if not is_admin_view and submission.status == 'draft' %}
+                        <button onclick="window.location.href='{% url 'submit_scenario' submission.id %}'" 
+                                class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Submit All Requirements
+                        </button>
+                        <button onclick="saveForLater()" 
+                                class="inline-flex items-center px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-bookmark mr-2"></i>
+                            Save for Later
+                        </button>
+                        {% elif is_admin_view %}
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            <p>Admin View - Read Only</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Metadata -->
+                <div class="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <span class="flex items-center">
+                        <i class="fas fa-clock mr-2"></i>
+                        Estimated: 2-3 hours
+                    </span>
+                    <span class="flex items-center">
+                        <i class="fas fa-users mr-2"></i>
+                        {{ submission.scenario.submissions.count }} submissions
+                    </span>
+                    <span class="flex items-center">
+                        <i class="fas fa-calendar mr-2"></i>
+                        Created {{ scenario.created_at|date:"M d, Y" }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Requirements Elicitation Card -->
+            {% if not is_admin_view %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <!-- Tab Navigation -->
+                <div class="border-b border-gray-200 dark:border-gray-700">
+                    <nav class="flex space-x-8 px-6">
+                        <button onclick="switchTab('functional')" 
+                                id="tab-functional"
+                                class="tab-button active py-4 px-1 border-b-2 border-blue-600 text-blue-600 font-medium text-sm flex items-center">
+                            <i class="fas fa-cog mr-2"></i>
+                            Functional Requirements
+                            <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{{ functional_reqs.count }}</span>
+                        </button>
+                        <button onclick="switchTab('non_functional')" 
+                                id="tab-non_functional"
+                                class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            Non-Functional Requirements
+                            <span class="ml-2 bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">{{ non_functional_reqs.count }}</span>
+                        </button>
+                        <button onclick="switchTab('business')" 
+                                id="tab-business"
+                                class="tab-button py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
+                            <i class="fas fa-briefcase mr-2"></i>
+                            Business Requirements
+                            <span class="ml-2 bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">{{ business_reqs.count }}</span>
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="p-6">
+                    <!-- Functional Requirements Tab -->
+                    <div id="content-functional" class="tab-content">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Functional Requirements</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Define what the system should do - the specific behaviors and functions.</p>
+                            </div>
+                            {% if submission.status == 'draft' %}
+                            <button onclick="addRequirement()" 
+                                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Requirement
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        <div id="requirements-functional" class="space-y-4">
+                            {% for req in functional_reqs %}
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">{{ req.title }}</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 mb-3">{{ req.description }}</p>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                            {% if req.priority == 'high' %}bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300
+                                            {% elif req.priority == 'medium' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300
+                                            {% else %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300{% endif %}">
+                                            {{ req.priority|title }} Priority
+                                        </span>
+                                    </div>
+                                    {% if submission.status == 'draft' %}
+                                    <div class="flex space-x-2 ml-4">
+                                        <button onclick="editRequirement({{ req.id }})" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="deleteRequirement({{ req.id }})" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-12">
+                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-plus text-gray-400 text-2xl"></i>
+                                </div>
+                                <p class="text-gray-500 dark:text-gray-400 mb-4">No functional requirements added yet</p>
+                                {% if submission.status == 'draft' %}
+                                <button onclick="addRequirement()" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    Add your first functional requirement
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Non-Functional Requirements Tab -->
+                    <div id="content-non_functional" class="tab-content hidden">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Non-Functional Requirements</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Define how the system should perform - quality attributes and constraints.</p>
+                            </div>
+                            {% if submission.status == 'draft' %}
+                            <button onclick="addRequirement()" 
+                                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Requirement
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        <div id="requirements-non_functional" class="space-y-4">
+                            {% for req in non_functional_reqs %}
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">{{ req.title }}</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 mb-3">{{ req.description }}</p>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                            {% if req.priority == 'high' %}bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300
+                                            {% elif req.priority == 'medium' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300
+                                            {% else %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300{% endif %}">
+                                            {{ req.priority|title }} Priority
+                                        </span>
+                                    </div>
+                                    {% if submission.status == 'draft' %}
+                                    <div class="flex space-x-2 ml-4">
+                                        <button onclick="editRequirement({{ req.id }})" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="deleteRequirement({{ req.id }})" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-12">
+                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-plus text-gray-400 text-2xl"></i>
+                                </div>
+                                <p class="text-gray-500 dark:text-gray-400 mb-4">No non-functional requirements added yet</p>
+                                {% if submission.status == 'draft' %}
+                                <button onclick="addRequirement()" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    Add your first non-functional requirement
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Business Requirements Tab -->
+                    <div id="content-business" class="tab-content hidden">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Business Requirements</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Define the business goals and objectives for the system.</p>
+                            </div>
+                            {% if submission.status == 'draft' %}
+                            <button onclick="addRequirement()" 
+                                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Requirement
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        <div id="requirements-business" class="space-y-4">
+                            {% for req in business_reqs %}
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">{{ req.title }}</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 mb-3">{{ req.description }}</p>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                            {% if req.priority == 'high' %}bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300
+                                            {% elif req.priority == 'medium' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300
+                                            {% else %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300{% endif %}">
+                                            {{ req.priority|title }} Priority
+                                        </span>
+                                    </div>
+                                    {% if submission.status == 'draft' %}
+                                    <div class="flex space-x-2 ml-4">
+                                        <button onclick="editRequirement({{ req.id }})" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="deleteRequirement({{ req.id }})" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-12">
+                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-plus text-gray-400 text-2xl"></i>
+                                </div>
+                                <p class="text-gray-500 dark:text-gray-400 mb-4">No business requirements added yet</p>
+                                {% if submission.status == 'draft' %}
+                                <button onclick="addRequirement()" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    Add your first business requirement
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Requirement Modal -->
+<div id="requirementModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Add Requirement</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form method="post" action="{% url 'add_requirement' submission.id %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Requirement Type</label>
+                <select name="requirement_type" required
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Select requirement type</option>
+                    <option value="functional">Functional Requirement</option>
+                    <option value="non_functional">Non-Functional Requirement</option>
+                    <option value="business">Business Requirement</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                <input type="text" name="title" required
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                <textarea name="description" rows="4" required
+                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
+                <select name="priority" required
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="high">High</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            
+            <div class="flex space-x-3 pt-4">
+                <button type="submit" 
+                        class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                    Add Requirement
+                </button>
+                <button type="button" onclick="closeModal()" 
+                        class="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg font-medium hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentTab = 'functional';
+
+function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active', 'border-blue-600', 'text-blue-600');
+        button.classList.add('border-transparent', 'text-gray-500');
+    });
+    
+    // Show selected tab content
+    document.getElementById(`content-${tabName}`).classList.remove('hidden');
+    
+    // Add active class to selected tab button
+    const activeButton = document.getElementById(`tab-${tabName}`);
+    activeButton.classList.add('active', 'border-blue-600', 'text-blue-600');
+    activeButton.classList.remove('border-transparent', 'text-gray-500');
+    
+    currentTab = tabName;
+}
+
+function addRequirement() {
+    document.getElementById('requirementModal').classList.remove('hidden');
+    document.querySelector('input[name="title"]').focus();
+}
+
+function closeModal() {
+    document.getElementById('requirementModal').classList.add('hidden');
+    document.querySelector('form').reset();
+}
+
+function editRequirement(id) {
+    window.location.href = `/requirements/${id}/edit/`;
+}
+
+function deleteRequirement(id) {
+    if (confirm('Are you sure you want to delete this requirement?')) {
+        window.location.href = `/requirements/${id}/delete/`;
+    }
+}
+
+function saveForLater() {
+    // This could save the current state without submitting
+    alert('Your progress has been saved.');
+}
+
+// Close modal when clicking outside
+document.getElementById('requirementModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Scenario - Requirements Lab{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-8">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Edit Scenario</h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">Update scenario details and content</p>
+                </div>
+                <a href="{% url 'admin_scenarios' %}" 
+                   class="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200 shadow-lg">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Scenarios
+                </a>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                
+                <!-- Basic Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label for="{{ form.title.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                            <i class="fas fa-heading mr-2 text-blue-500"></i>
+                            Scenario Title
+                        </label>
+                        <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" 
+                               value="{{ form.title.value|default:'' }}"
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="Enter scenario title">
+                        {% if form.title.errors %}
+                        <p class="text-red-600 text-sm mt-2">{{ form.title.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.difficulty.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                            <i class="fas fa-signal mr-2 text-purple-500"></i>
+                            Difficulty Level
+                        </label>
+                        <select name="{{ form.difficulty.name }}" id="{{ form.difficulty.id_for_label }}" 
+                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <option value="">Select difficulty level</option>
+                            <option value="beginner" {% if form.difficulty.value == 'beginner' %}selected{% endif %}>Beginner</option>
+                            <option value="intermediate" {% if form.difficulty.value == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                            <option value="advanced" {% if form.difficulty.value == 'advanced' %}selected{% endif %}>Advanced</option>
+                        </select>
+                        {% if form.difficulty.errors %}
+                        <p class="text-red-600 text-sm mt-2">{{ form.difficulty.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Introduction -->
+                <div>
+                    <label for="{{ form.introduction.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                        <i class="fas fa-info-circle mr-2 text-green-500"></i>
+                        Introduction
+                    </label>
+                    <textarea name="{{ form.introduction.name }}" id="{{ form.introduction.id_for_label }}" rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                              placeholder="Provide an engaging introduction to the scenario">{{ form.introduction.value|default:'' }}</textarea>
+                    {% if form.introduction.errors %}
+                    <p class="text-red-600 text-sm mt-2">{{ form.introduction.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Aim -->
+                <div>
+                    <label for="{{ form.aim.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                        <i class="fas fa-bullseye mr-2 text-orange-500"></i>
+                        Aim
+                    </label>
+                    <textarea name="{{ form.aim.name }}" id="{{ form.aim.id_for_label }}" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                              placeholder="Define the main objective of this scenario">{{ form.aim.value|default:'' }}</textarea>
+                    {% if form.aim.errors %}
+                    <p class="text-red-600 text-sm mt-2">{{ form.aim.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Objectives -->
+                <div>
+                    <label for="{{ form.objectives.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                        <i class="fas fa-list-check mr-2 text-indigo-500"></i>
+                        Learning Objectives
+                    </label>
+                    <textarea name="{{ form.objectives.name }}" id="{{ form.objectives.id_for_label }}" rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                              placeholder="List the specific learning objectives students should achieve">{{ form.objectives.value|default:'' }}</textarea>
+                    {% if form.objectives.errors %}
+                    <p class="text-red-600 text-sm mt-2">{{ form.objectives.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Description -->
+                <div>
+                    <label for="{{ form.description.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                        <i class="fas fa-file-alt mr-2 text-teal-500"></i>
+                        Scenario Description
+                    </label>
+                    <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" rows="6"
+                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                              placeholder="Provide a detailed description of the scenario, including context, stakeholders, and requirements to be elicited">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                    <p class="text-red-600 text-sm mt-2">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Active Status -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="{{ form.is_active.id_for_label }}" name="{{ form.is_active.name }}" 
+                               {% if form.is_active.value %}checked{% endif %}
+                               class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="{{ form.is_active.id_for_label }}" class="ml-3 block text-lg font-semibold text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-toggle-on mr-2 text-green-500"></i>
+                            Active Scenario
+                        </label>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 ml-8">
+                        Active scenarios are visible to students and can be accessed for learning
+                    </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-4 pt-8 border-t border-gray-200 dark:border-gray-700">
+                    <a href="{% url 'admin_scenarios' %}" 
+                       class="px-8 py-3 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition duration-200 font-semibold">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg font-semibold">
+                        <i class="fas fa-save mr-2"></i>
+                        Update Scenario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom styling for form elements */
+input[type="text"], textarea, select {
+    @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors;
+}
+
+textarea {
+    @apply resize-vertical;
+    min-height: 120px;
+}
+
+/* Smooth transitions */
+* {
+    transition: all 0.2s ease-in-out;
+}
+</style>
+{% endblock %} 

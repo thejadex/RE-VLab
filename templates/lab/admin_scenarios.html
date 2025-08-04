@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Scenarios - Requirements Lab{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Manage Scenarios</h1>
+                <p class="text-gray-600 mt-2">Create and manage learning scenarios</p>
+            </div>
+            <a href="{% url 'create_scenario' %}" 
+               class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-200">
+                <i class="fas fa-plus mr-2"></i>Create Scenario
+            </a>
+        </div>
+    </div>
+
+    <!-- Scenarios List -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold">All Scenarios</h2>
+        </div>
+        
+        {% if scenarios %}
+        <div class="divide-y divide-gray-200">
+            {% for scenario in scenarios %}
+            <div class="p-6 hover:bg-gray-50">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900">{{ scenario.title }}</h3>
+                        <p class="text-gray-600 mt-1">{{ scenario.introduction|truncatewords:30 }}</p>
+                        <div class="flex items-center mt-2 space-x-4 text-sm text-gray-500">
+                            <span>Created {{ scenario.created_at|date:"M d, Y" }}</span>
+                            <span>by {{ scenario.created_by.get_full_name|default:scenario.created_by.username }}</span>
+                            <span class="px-2 py-1 rounded-full text-xs 
+                                {% if scenario.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {% if scenario.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 ml-4">
+                        <a href="{% url 'scenario_detail' scenario.pk %}" 
+                           class="text-indigo-600 hover:text-indigo-800 p-2" title="View Scenario">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'edit_scenario' scenario.pk %}" 
+                           class="text-gray-600 hover:text-gray-800 p-2" title="Edit Scenario">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button onclick="deleteScenario({{ scenario.pk }}, '{{ scenario.title }}')" 
+                                class="text-red-600 hover:text-red-800 p-2" title="Delete Scenario">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No scenarios yet</h3>
+            <p class="text-gray-500 mb-4">Create your first scenario to get started.</p>
+            <a href="{% url 'create_scenario' %}" 
+               class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-200">
+                <i class="fas fa-plus mr-2"></i>Create Scenario
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function deleteScenario(scenarioId, scenarioTitle) {
+    if (confirm(`Are you sure you want to delete the scenario "${scenarioTitle}"? This action cannot be undone.`)) {
+        // Create a form to submit the delete request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin-panel/scenarios/${scenarioId}/delete/`;
+        
+        // Add CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+
+<!-- CSRF Token -->
+{% csrf_token %}
+{% endblock %}

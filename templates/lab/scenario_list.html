@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Scenarios - nuVLab{% endblock %}
+
+{% block content %}
+<div class="flowing-bg min-h-screen -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8">
+    <div class="flowing-lines opacity-20"></div>
+    
+    <div class="relative z-10">
+        <!-- Header -->
+        <div class="mb-8 animate-fade-in">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h1 class="heading-lg text-primary-900 dark:text-white mb-2">Browse Scenarios</h1>
+                    <p class="text-primary-600 dark:text-primary-300">
+                        Discover and engage with requirements engineering challenges
+                    </p>
+                </div>
+                
+                <!-- Filters -->
+                <div class="mt-6 lg:mt-0 flex flex-wrap gap-3">
+                    <select class="px-4 py-2 bg-white dark:bg-primary-800 border border-primary-200 dark:border-primary-700 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option>All Categories</option>
+                        <option>E-commerce</option>
+                        <option>Healthcare</option>
+                        <option>Finance</option>
+                        <option>Education</option>
+                    </select>
+                    
+                    <select class="px-4 py-2 bg-white dark:bg-primary-800 border border-primary-200 dark:border-primary-700 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option>All Difficulties</option>
+                        <option>Beginner</option>
+                        <option>Intermediate</option>
+                        <option>Advanced</option>
+                    </select>
+                    
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors">
+                        <i class="fas fa-filter mr-2"></i>
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenarios Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="scenariosGrid">
+            {% for scenario in scenarios %}
+            <div class="modern-card p-6 group hover:scale-105 transition-all duration-300 scenario-card" 
+            data-title="{{ scenario.title|lower }}" 
+            data-status="{% if scenario.user_submission %}{% if scenario.user_submission.status == 'submitted' %}completed{% elif scenario.user_submission.status == 'feedback_received' %}in-progress{% else %}not-started{% endif %}{% else %}not-started{% endif %}">
+                <!-- Scenario Header -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="px-2 py-1 bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300 text-xs font-medium rounded-full">
+                                {{ scenario.category }}
+                            </span>
+                            <span class="px-2 py-1 {% if scenario.difficulty == 'Beginner' %}bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300{% elif scenario.difficulty == 'Intermediate' %}bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300{% else %}bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300{% endif %} text-xs font-medium rounded-full">
+                                {{ scenario.difficulty }}
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-bold text-primary-900 dark:text-white mb-2 group-hover:text-primary-700 dark:group-hover:text-primary-300">
+                            {{ scenario.title }}
+                        </h3>
+                    </div>
+                    
+                    {% if scenario.user_submission %}
+                        <div class="flex-shrink-0 ml-3">
+                            <div class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-green-600 dark:text-green-400 text-sm"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Description -->
+                <p class="text-primary-600 dark:text-primary-400 text-sm mb-4 line-clamp-3">
+                    {{ scenario.description }}
+                </p>
+                
+                <!-- Metadata -->
+                <div class="flex items-center justify-between text-xs text-primary-500 dark:text-primary-400 mb-4">
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-clock mr-1"></i>
+                            {{ scenario.estimated_time|default:"2-3 hours" }}
+                        </span>
+                        <span class="flex items-center">
+                            <i class="fas fa-users mr-1"></i>
+                            {{ scenario.submissions_count|default:0 }} submissions
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar (if started) -->
+                {% if scenario.user_progress %}
+                <div class="mb-4">
+                    <div class="flex items-center justify-between text-xs text-primary-600 dark:text-primary-400 mb-1">
+                        <span>Your Progress</span>
+                        <span>{{ scenario.user_progress }}%</span>
+                    </div>
+                    <div class="w-full bg-primary-200 dark:bg-primary-700 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500" 
+                             style="width: {{ scenario.user_progress }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Action Button -->
+                <div class="flex items-center justify-between">
+                <a href="{% if scenario.user_submission and scenario.user_submission.status == 'feedback_received' %}{% url 'submission_detail' scenario.user_submission.id %}{% else %}{% url 'scenario_detail' scenario.id %}{% endif %}" 
+                    class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors group-hover:scale-105">
+                    {% if scenario.user_submission %}
+                        {% if scenario.user_submission.status == 'submitted' %}
+                            <i class="fas fa-eye mr-2"></i>
+                            View Results
+                        {% elif scenario.user_submission.status == 'feedback_received' %}
+                            <i class="fas fa-comments mr-2"></i>
+                            View Feedback
+                        {% else %}
+                            <i class="fas fa-play mr-2"></i>
+                            Continue
+                        {% endif %}
+                    {% else %}
+                        <i class="fas fa-rocket mr-2"></i>
+                        Start Scenario
+                    {% endif %}
+                </a>
+                    
+                    <button class="ml-3 p-2 text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 transition-colors">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-16">
+                <div class="w-20 h-20 bg-primary-100 dark:bg-primary-800 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-search text-primary-600 dark:text-primary-400 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-primary-900 dark:text-white mb-2">No scenarios found</h3>
+                <p class="text-primary-600 dark:text-primary-400 mb-6">Try adjusting your filters or check back later for new scenarios</p>
+                <button class="btn-primary">
+                    <i class="fas fa-refresh mr-2"></i>
+                    Reset Filters
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Load More -->
+        {% if scenarios.has_next %}
+        <div class="text-center mt-12">
+            <button class="btn-secondary">
+                <i class="fas fa-plus mr-2"></i>
+                Load More Scenarios
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Search and filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('scenarioSearch');
+    const statusFilter = document.getElementById('statusFilter');
+    const categoryFilter = document.querySelector('select option[value="E-commerce"], select option[value="Healthcare"], select option[value="Finance"], select option[value="Education"]');
+    const difficultyFilter = document.querySelector('select option[value="Beginner"], select option[value="Intermediate"], select option[value="Advanced"]');
+    const scenarioCards = document.querySelectorAll('.scenario-card');
+    
+    function filterScenarios() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        const categoryValue = categoryFilter.value;
+        const difficultyValue = difficultyFilter.value;
+        
+        scenarioCards.forEach(card => {
+            const title = card.dataset.title;
+            const status = card.dataset.status;
+            const category = card.querySelector('.bg-primary-100').textContent.toLowerCase();
+            const difficulty = card.querySelector('.bg-green-100, .bg-yellow-100, .bg-red-100').textContent.toLowerCase();
+            
+            const matchesSearch = title.includes(searchTerm);
+            const matchesStatus = !statusValue || status === statusValue;
+            const matchesCategory = !categoryValue || category === categoryValue.toLowerCase();
+            const matchesDifficulty = !difficultyValue || difficulty === difficultyValue.toLowerCase();
+            
+            if (matchesSearch && matchesStatus && matchesCategory && matchesDifficulty) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    searchInput.addEventListener('input', filterScenarios);
+    statusFilter.addEventListener('change', filterScenarios);
+    categoryFilter.addEventListener('change', filterScenarios);
+    difficultyFilter.addEventListener('change', filterScenarios);
+});
+</script>
+
+<style>
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.animate-fade-in {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modern-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.floating-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: -1;
+    border-radius: 12px;
+}
+
+.floating-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 10px 10px;
+    z-index: -1;
+}
+</style>
+{% endblock %}

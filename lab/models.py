@@ -21,12 +21,15 @@ class UserProfile(models.Model):
         return f"{self.user.username} ({self.role})"
     
 
-# @receiver(post_save, sender=User)
-# def create_user_profile_signal(sender, instance, created, **kwargs):
-#     if created:
-#         # Only create if not exists
-#         if not hasattr(instance, 'userprofile'):
-#             UserProfile.objects.create(user=instance, role='admin' if instance.is_superuser else 'student')
+@receiver(post_save, sender=User)
+def create_user_profile_signal(sender, instance, created, **kwargs):
+    if created:
+        # Create profile for new users
+        role = 'admin' if instance.is_superuser else 'student'
+        UserProfile.objects.get_or_create(
+            user=instance,
+            defaults={'role': role}
+        )
 
 
 class Scenario(models.Model):

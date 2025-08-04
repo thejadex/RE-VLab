@@ -85,10 +85,15 @@ def dashboard(request):
     # Get or create user profile
     user_profile, created = UserProfile.objects.get_or_create(
         user=request.user,
-        defaults={'role': 'student'}
+        defaults={'role': 'admin' if request.user.is_superuser else 'student'}
     )
     
-    if user_profile.role == 'admin':
+    # If this is a superuser but profile says student, update to admin
+    if request.user.is_superuser and user_profile.role != 'admin':
+        user_profile.role = 'admin'
+        user_profile.save()
+    
+    if user_profile.role == 'admin' or request.user.is_superuser:
         return admin_dashboard(request)
     else:
         return student_dashboard(request)
@@ -137,11 +142,21 @@ def student_dashboard(request):
 # @cache_page(60 * 20)
 @login_required
 def admin_dashboard(request):
-    # Check admin permissions
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.role != 'admin':
-        messages.error(request, 'Access denied.')
-        return redirect('dashboard')
+    # Check admin permissions - allow superusers even without admin profile
+    if request.user.is_superuser:
+        # Ensure superuser has admin profile
+        user_profile, created = UserProfile.objects.get_or_create(
+            user=request.user,
+            defaults={'role': 'admin'}
+        )
+        if user_profile.role != 'admin':
+            user_profile.role = 'admin'
+            user_profile.save()
+    else:
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        if user_profile.role != 'admin':
+            messages.error(request, 'Access denied.')
+            return redirect('dashboard')
     
     # Get admin statistics
     total_scenarios = Scenario.objects.count()
@@ -490,28 +505,78 @@ def delete_scenario(request, pk):
 @login_required
 def admin_submissions(request):
     user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.role != 'admin':
+    if user_profile.role != 'admin' and not request.user.is_superuser:
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
     
-    submissions = ScenarioSubmission.objects.all().order_by('-updated_at')
+    # Get all submissions
+    submissions = ScenarioSubmission.objects.select_related('scenario', 'student', 'student__userprofile').prefetch_related('requirements').all().order_by('-updated_at')
+    
+    # Calculate statistics
+    total_submissions = submissions.count()
+    pending_reviews = submissions.filter(status='submitted').count()
+    completed_reviews = submissions.filter(status='feedback_received').count()
+    draft_submissions = submissions.filter(status='draft').count()
+    
+    # Get scenario statistics
+    scenario_stats = {}
+    scenarios = Scenario.objects.filter(is_active=True).annotate(
+        submission_count=Count('scenariosubmission'),
+        submitted_count=Count('scenariosubmission', filter=Q(scenariosubmission__status='submitted')),
+        draft_count=Count('scenariosubmission', filter=Q(scenariosubmission__status='draft'))
+    ).order_by('title')
+    
+    for scenario in scenarios:
+        scenario_stats[scenario.id] = {
+            'title': scenario.title,
+            'total': scenario.submission_count,
+            'submitted': scenario.submitted_count,
+            'draft': scenario.draft_count,
+        }
     
     # Filter by status if provided
     status_filter = request.GET.get('status')
     if status_filter:
         submissions = submissions.filter(status=status_filter)
     
-    # Get all scenarios for filtering
-    scenarios = Scenario.objects.filter(is_active=True).order_by('title')
+    # Filter by scenario if provided
+    scenario_filter = request.GET.get('scenario')
+    if scenario_filter:
+        submissions = submissions.filter(scenario_id=scenario_filter)
     
-    paginator = Paginator(submissions, 10)
+    # Search functionality
+    search_query = request.GET.get('search')
+    if search_query:
+        submissions = submissions.filter(
+            Q(student__username__icontains=search_query) |
+            Q(student__first_name__icontains=search_query) |
+            Q(student__last_name__icontains=search_query) |
+            Q(scenario__title__icontains=search_query)
+        )
+    
+    # Get recent activity for submissions
+    recent_submissions = submissions.filter(status='submitted').order_by('-submitted_at')[:5]
+    
+    # Pagination
+    paginator = Paginator(submissions, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    return render(request, 'lab/admin_submissions.html', {
+    context = {
         'page_obj': page_obj,
         'scenarios': scenarios,
-    })
+        'scenario_stats': scenario_stats,
+        'total_submissions': total_submissions,
+        'pending_reviews': pending_reviews,
+        'completed_reviews': completed_reviews,
+        'draft_submissions': draft_submissions,
+        'recent_submissions': recent_submissions,
+        'status_filter': status_filter,
+        'scenario_filter': scenario_filter,
+        'search_query': search_query,
+    }
+    
+    return render(request, 'lab/admin_submissions.html', context)
 
 @login_required
 def submission_detail(request, pk):

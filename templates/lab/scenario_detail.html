@@ -2,6 +2,13 @@
 
 {% block title %}{{ scenario.title }} - RE VLab{% endblock %}
 
+{% comment %}
+EDIT/DELETE BUTTON LOGIC:
+- Edit and delete buttons for requirements only appear when submission.status == 'draft'
+- Once a submission is submitted, requirements become read-only
+- Admin users see a read-only view with is_admin_view=True
+{% endcomment %}
+
 {% block content %}
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <div class="max-w-6xl mx-auto p-6">

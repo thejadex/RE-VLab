@@ -23,6 +23,32 @@ from .forms import (
     FeedbackForm, SRSDocumentForm
 )
 
+
+def check_admin_permission(request):
+    """
+    Helper function to check if user has admin permissions.
+    Returns (is_admin, user_profile) tuple.
+    Handles superusers properly by creating/updating their profiles.
+    """
+    if request.user.is_superuser:
+        # Ensure superuser has admin profile
+        user_profile, created = UserProfile.objects.get_or_create(
+            user=request.user,
+            defaults={'role': 'admin'}
+        )
+        if user_profile.role != 'admin':
+            user_profile.role = 'admin'
+            user_profile.save()
+        return True, user_profile
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        return user_profile.role == 'admin', user_profile
+    except UserProfile.DoesNotExist:
+        # Create student profile for non-superusers
+        user_profile = UserProfile.objects.create(user=request.user, role='student')
+        return False, user_profile
+
 def home(request):
     # Redirect authenticated users to dashboard
     if request.user.is_authenticated:
@@ -142,21 +168,11 @@ def student_dashboard(request):
 # @cache_page(60 * 20)
 @login_required
 def admin_dashboard(request):
-    # Check admin permissions - allow superusers even without admin profile
-    if request.user.is_superuser:
-        # Ensure superuser has admin profile
-        user_profile, created = UserProfile.objects.get_or_create(
-            user=request.user,
-            defaults={'role': 'admin'}
-        )
-        if user_profile.role != 'admin':
-            user_profile.role = 'admin'
-            user_profile.save()
-    else:
-        user_profile = get_object_or_404(UserProfile, user=request.user)
-        if user_profile.role != 'admin':
-            messages.error(request, 'Access denied.')
-            return redirect('dashboard')
+    # Check admin permissions using helper function
+    is_admin, user_profile = check_admin_permission(request)
+    if not is_admin:
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard')
     
     # Get admin statistics
     total_scenarios = Scenario.objects.count()
@@ -437,8 +453,8 @@ def notifications(request):
 # Admin Views
 @login_required
 def admin_scenarios(request):
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.role != 'admin':
+    is_admin, user_profile = check_admin_permission(request)
+    if not is_admin:
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
     
@@ -447,8 +463,8 @@ def admin_scenarios(request):
 
 @login_required
 def create_scenario(request):
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.role != 'admin':
+    is_admin, user_profile = check_admin_permission(request)
+    if not is_admin:
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
     
@@ -467,8 +483,8 @@ def create_scenario(request):
 
 @login_required
 def edit_scenario(request, pk):
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.role != 'admin':
+    is_admin, user_profile = check_admin_permission(request)
+    if not is_admin:
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
     
@@ -487,8 +503,8 @@ def edit_scenario(request, pk):
 
 @login_required
 def delete_scenario(request, pk):
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.role != 'admin':
+    is_admin, user_profile = check_admin_permission(request)
+    if not is_admin:
         messages.error(request, 'Access denied.')
         return redirect('admin_dashboard')
     
@@ -615,8 +631,8 @@ def submission_detail(request, pk):
 
 @login_required
 def add_feedback(request, submission_id):
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.role != 'admin':
+    is_admin, user_profile = check_admin_permission(request)
+    if not is_admin:
         messages.error(request, 'Access denied.')
         return redirect('dashboard')
     

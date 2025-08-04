@@ -142,11 +142,21 @@ def student_dashboard(request):
 # @cache_page(60 * 20)
 @login_required
 def admin_dashboard(request):
-    # Check admin permissions
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.role != 'admin':
-        messages.error(request, 'Access denied.')
-        return redirect('dashboard')
+    # Check admin permissions - allow superusers even without admin profile
+    if request.user.is_superuser:
+        # Ensure superuser has admin profile
+        user_profile, created = UserProfile.objects.get_or_create(
+            user=request.user,
+            defaults={'role': 'admin'}
+        )
+        if user_profile.role != 'admin':
+            user_profile.role = 'admin'
+            user_profile.save()
+    else:
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        if user_profile.role != 'admin':
+            messages.error(request, 'Access denied.')
+            return redirect('dashboard')
     
     # Get admin statistics
     total_scenarios = Scenario.objects.count()

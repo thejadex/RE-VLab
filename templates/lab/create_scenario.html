@@ -5,97 +5,98 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="space-y-8">
+    <div class="space-y-6 sm:space-y-8">
         <!-- Header -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between">
+        <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-gray-700">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Create New Scenario</h1>
-                    <p class="text-gray-600 dark:text-gray-400 mt-2">Design a learning scenario for students to practice requirements elicitation</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Create New Scenario</h1>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-2">Design a learning scenario for students to practice requirements elicitation</p>
                 </div>
                 <a href="{% url 'admin_scenarios' %}" 
-                   class="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200 shadow-lg">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    Back to Scenarios
+                   class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200 shadow-lg text-sm sm:text-base">
+                    <i class="fas fa-arrow-left mr-1 sm:mr-2"></i>
+                    <span class="hidden sm:inline">Back to Scenarios</span>
+                    <span class="sm:hidden">Back</span>
                 </a>
             </div>
         </div>
 
         <!-- Create Form -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
-            <form method="post" class="space-y-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-gray-700">
+            <form method="post" class="space-y-6 sm:space-y-8">
                 {% csrf_token %}
                 
                 <!-- Basic Information -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                     <div>
-                        <label for="{{ form.title.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="block text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                             <i class="fas fa-heading mr-2 text-blue-500"></i>
                             Scenario Title
                         </label>
                         <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" 
                                value="{{ form.title.value|default:'' }}"
-                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
                                placeholder="Enter scenario title">
                         {% if form.title.errors %}
-                        <p class="text-red-600 text-sm mt-2">{{ form.title.errors.0 }}</p>
+                        <p class="text-red-600 text-xs sm:text-sm mt-2">{{ form.title.errors.0 }}</p>
                         {% endif %}
                     </div>
                     
                     <div>
-                        <label for="{{ form.difficulty.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                        <label for="{{ form.difficulty.id_for_label }}" class="block text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                             <i class="fas fa-signal mr-2 text-purple-500"></i>
                             Difficulty Level
                         </label>
                         <select name="{{ form.difficulty.name }}" id="{{ form.difficulty.id_for_label }}" 
-                                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base">
                             <option value="">Select difficulty level</option>
                             <option value="beginner" {% if form.difficulty.value == 'beginner' %}selected{% endif %}>Beginner</option>
                             <option value="intermediate" {% if form.difficulty.value == 'intermediate' %}selected{% endif %}>Intermediate</option>
                             <option value="advanced" {% if form.difficulty.value == 'advanced' %}selected{% endif %}>Advanced</option>
                         </select>
                         {% if form.difficulty.errors %}
-                        <p class="text-red-600 text-sm mt-2">{{ form.difficulty.errors.0 }}</p>
+                        <p class="text-red-600 text-xs sm:text-sm mt-2">{{ form.difficulty.errors.0 }}</p>
                         {% endif %}
                     </div>
                 </div>
                 
                 <!-- Introduction -->
                 <div>
-                    <label for="{{ form.introduction.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    <label for="{{ form.introduction.id_for_label }}" class="block text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <i class="fas fa-info-circle mr-2 text-green-500"></i>
                         Introduction
                     </label>
                     <textarea name="{{ form.introduction.name }}" id="{{ form.introduction.id_for_label }}" rows="4"
-                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                              class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical text-sm sm:text-base"
                               placeholder="Provide an engaging introduction to the scenario">{{ form.introduction.value|default:'' }}</textarea>
                     {% if form.introduction.errors %}
-                    <p class="text-red-600 text-sm mt-2">{{ form.introduction.errors.0 }}</p>
+                    <p class="text-red-600 text-xs sm:text-sm mt-2">{{ form.introduction.errors.0 }}</p>
                     {% endif %}
                 </div>
                 
                 <!-- Aim -->
                 <div>
-                    <label for="{{ form.aim.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    <label for="{{ form.aim.id_for_label }}" class="block text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <i class="fas fa-bullseye mr-2 text-orange-500"></i>
                         Aim
                     </label>
                     <textarea name="{{ form.aim.name }}" id="{{ form.aim.id_for_label }}" rows="3"
-                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                              class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical text-sm sm:text-base"
                               placeholder="Define the main objective of this scenario">{{ form.aim.value|default:'' }}</textarea>
                     {% if form.aim.errors %}
-                    <p class="text-red-600 text-sm mt-2">{{ form.aim.errors.0 }}</p>
+                    <p class="text-red-600 text-xs sm:text-sm mt-2">{{ form.aim.errors.0 }}</p>
                     {% endif %}
                 </div>
                 
                 <!-- Objectives -->
                 <div>
-                    <label for="{{ form.objectives.id_for_label }}" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    <label for="{{ form.objectives.id_for_label }}" class="block text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 sm:mb-3">
                         <i class="fas fa-list-check mr-2 text-indigo-500"></i>
                         Learning Objectives
                     </label>
                     <textarea name="{{ form.objectives.name }}" id="{{ form.objectives.id_for_label }}" rows="4"
-                              class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+                              class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical text-sm sm:text-base"
                               placeholder="List the specific learning objectives students should achieve">{{ form.objectives.value|default:'' }}</textarea>
                     {% if form.objectives.errors %}
                     <p class="text-red-600 text-sm mt-2">{{ form.objectives.errors.0 }}</p>

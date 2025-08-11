@@ -135,11 +135,25 @@ def student_dashboard(request):
     # Get user's submissions for progress tracking
     submissions = ScenarioSubmission.objects.filter(student=request.user)
     
-    # Calculate progress
+    # Calculate progress including partial progress for active submissions
     total_scenarios = Scenario.objects.filter(is_active=True).count()
     completed_scenarios = submissions.filter(status__in=['submitted', 'feedback_received']).values_list('scenario_id', flat=True).distinct()
     completed_count = len(completed_scenarios)
-    progress_percentage = round((completed_count / total_scenarios * 100)) if total_scenarios > 0 else 0
+    
+    # Calculate partial progress for active (draft) submissions
+    active_submissions_data = submissions.filter(status='draft').select_related('scenario')
+    active_progress = 0
+    
+    for active_sub in active_submissions_data:
+        # Count total requirements for the scenario and user's progress
+        total_reqs = Requirement.objects.filter(submission=active_sub).count()
+        if total_reqs > 0:
+            # Add partial progress (0.5 for scenarios with active work)
+            active_progress += 0.5
+    
+    # Calculate total progress: completed scenarios + partial progress from active work
+    total_progress = completed_count + active_progress
+    progress_percentage = round((total_progress / total_scenarios * 100)) if total_scenarios > 0 else 0
     
     # Get recent activities (completed submissions)
     recent_activities = submissions.filter(status='submitted').order_by('-submitted_at')[:5]

@@ -8,38 +8,40 @@
     
     <div class="relative z-10 max-w-7xl mx-auto space-y-8">
         <!-- Welcome Header -->
-        <div class="modern-card p-8">
+        <div class="modern-card p-6 sm:p-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                <div class="mb-6 lg:mb-0">
-                    <h1 class="text-4xl font-bold text-primary-900 dark:text-white mb-2">
+                <div class="mb-4 sm:mb-6 lg:mb-0">
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-900 dark:text-white mb-2">
                         Admin Dashboard
                     </h1>
-                    <p class="text-xl text-primary-600 dark:text-primary-400">
+                    <p class="text-base sm:text-xl text-primary-600 dark:text-primary-400">
                         Manage scenarios, review submissions, and monitor student progress
                     </p>
-                    <div class="mt-4 flex items-center space-x-4">
+                    <div class="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
                         <div class="flex items-center space-x-2">
                             <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                            <span class="text-sm text-primary-500 dark:text-primary-400">System Status: Online</span>
+                            <span class="text-xs sm:text-sm text-primary-500 dark:text-primary-400">System Status: Online</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <i class="fas fa-users text-primary-400"></i>
-                            <span class="text-sm text-primary-500 dark:text-primary-400">{{ total_students|default:0 }} Active Students</span>
+                            <i class="fas fa-users text-primary-400 text-sm"></i>
+                            <span class="text-xs sm:text-sm text-primary-500 dark:text-primary-400">{{ total_students|default:0 }} Active Students</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Quick Actions -->
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <a href="{% url 'create_scenario' %}" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105">
-                        <i class="fas fa-plus mr-2"></i>
-                        Create Scenario
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <a href="{% url 'create_scenario' %}" class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg sm:rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
+                        <i class="fas fa-plus mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Create Scenario</span>
+                        <span class="sm:hidden">Create</span>
                     </a>
-                    <a href="{% url 'admin_submissions' %}" class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-105">
-                        <i class="fas fa-clipboard-list mr-2"></i>
-                        Review Submissions
+                    <a href="{% url 'admin_submissions' %}" class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg sm:rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
+                        <i class="fas fa-clipboard-list mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Review Submissions</span>
+                        <span class="sm:hidden">Review</span>
                         {% if pending_reviews > 0 %}
-                        <span class="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                        <span class="ml-1 sm:ml-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center animate-pulse">
                             {{ pending_reviews }}
                         </span>
                         {% endif %}
@@ -49,51 +51,51 @@
         </div>
 
         <!-- Statistics Overview -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="modern-card p-6 hover:scale-105 transition-all duration-300">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="modern-card p-4 sm:p-6 hover:scale-105 transition-all duration-300">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-project-diagram text-white text-xl"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-project-diagram text-white text-base sm:text-xl"></i>
                     </div>
-                    <div class="ml-4">
-                        <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ total_scenarios|default:0 }}</div>
-                        <div class="text-sm text-primary-600 dark:text-primary-400">Total Scenarios</div>
+                    <div class="ml-3 sm:ml-4">
+                        <div class="text-lg sm:text-2xl font-bold text-primary-900 dark:text-white">{{ total_scenarios|default:0 }}</div>
+                        <div class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">Total Scenarios</div>
                     </div>
                 </div>
             </div>
 
-            <div class="modern-card p-6 hover:scale-105 transition-all duration-300">
+            <div class="modern-card p-4 sm:p-6 hover:scale-105 transition-all duration-300">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-users text-white text-xl"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg sm:rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-users text-white text-base sm:text-xl"></i>
                     </div>
-                    <div class="ml-4">
-                        <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ total_students|default:0 }}</div>
-                        <div class="text-sm text-primary-600 dark:text-primary-400">Active Students</div>
+                    <div class="ml-3 sm:ml-4">
+                        <div class="text-lg sm:text-2xl font-bold text-primary-900 dark:text-white">{{ total_students|default:0 }}</div>
+                        <div class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">Active Students</div>
                     </div>
                 </div>
             </div>
 
-            <div class="modern-card p-6 hover:scale-105 transition-all duration-300">
+            <div class="modern-card p-4 sm:p-6 hover:scale-105 transition-all duration-300">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-file-alt text-white text-xl"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg sm:rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-file-alt text-white text-base sm:text-xl"></i>
                     </div>
-                    <div class="ml-4">
-                        <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ total_submissions|default:0 }}</div>
-                        <div class="text-sm text-primary-600 dark:text-primary-400">Total Submissions</div>
+                    <div class="ml-3 sm:ml-4">
+                        <div class="text-lg sm:text-2xl font-bold text-primary-900 dark:text-white">{{ total_submissions|default:0 }}</div>
+                        <div class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">Total Submissions</div>
                     </div>
                 </div>
             </div>
 
-            <div class="modern-card p-6 hover:scale-105 transition-all duration-300">
+            <div class="modern-card p-4 sm:p-6 hover:scale-105 transition-all duration-300">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-clock text-white text-xl"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg sm:rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-clock text-white text-base sm:text-xl"></i>
                     </div>
-                    <div class="ml-4">
-                        <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ pending_reviews|default:0 }}</div>
-                        <div class="text-sm text-primary-600 dark:text-primary-400">Pending Reviews</div>
+                    <div class="ml-3 sm:ml-4">
+                        <div class="text-lg sm:text-2xl font-bold text-primary-900 dark:text-white">{{ pending_reviews|default:0 }}</div>
+                        <div class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">Pending Reviews</div>
                     </div>
                 </div>
             </div>

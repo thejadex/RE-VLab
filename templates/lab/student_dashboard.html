@@ -8,31 +8,31 @@
     
     <div class="relative z-10">
         <!-- Welcome Header -->
-        <div class="mb-8 animate-fade-in">
+        <div class="mb-6 sm:mb-8 animate-fade-in">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <h1 class="heading-lg text-primary-900 dark:text-white mb-2">
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-900 dark:text-white mb-2">
                         Welcome back, {{ user.first_name|default:user.username }}! 👋
                     </h1>
-                    <p class="text-primary-600 dark:text-primary-300">
+                    <p class="text-sm sm:text-base text-primary-600 dark:text-primary-300">
                         Continue your requirements engineering journey
                     </p>
                 </div>
                 <div class="mt-4 lg:mt-0">
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 sm:space-x-4">
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ completed_submissions|default:"0" }}</div>
-                            <div class="text-sm text-primary-600 dark:text-primary-400">Completed</div>
+                            <div class="text-lg sm:text-2xl font-bold text-primary-900 dark:text-white">{{ completed_submissions|default:"0" }}</div>
+                            <div class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">Completed</div>
                         </div>
-                        <div class="w-px h-12 bg-primary-200 dark:bg-primary-700"></div>
+                        <div class="w-px h-8 sm:h-12 bg-primary-200 dark:bg-primary-700"></div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ draft_submissions|default:"0" }}</div>
-                            <div class="text-sm text-primary-600 dark:text-primary-400">In Progress</div>
+                            <div class="text-lg sm:text-2xl font-bold text-primary-900 dark:text-white">{{ draft_submissions|default:"0" }}</div>
+                            <div class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">In Progress</div>
                         </div>
-                        <div class="w-px h-12 bg-primary-200 dark:bg-primary-700"></div>
+                        <div class="w-px h-8 sm:h-12 bg-primary-200 dark:bg-primary-700"></div>
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-primary-900 dark:text-white">{{ total_scenarios|default:"0" }}</div>
-                            <div class="text-sm text-primary-600 dark:text-primary-400">Available</div>
+                            <div class="text-lg sm:text-2xl font-bold text-primary-900 dark:text-white">{{ total_scenarios|default:"0" }}</div>
+                            <div class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">Available</div>
                         </div>
                     </div>
                 </div>
@@ -40,68 +40,68 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <a href="{% url 'scenario_list' %}" class="modern-card p-6 group hover:scale-105 transition-all duration-300">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <a href="{% url 'scenario_list' %}" class="modern-card p-4 sm:p-6 group hover:scale-105 transition-all duration-300">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-search text-white"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center mr-3 sm:mr-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-search text-white text-sm sm:text-base"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-primary-900 dark:text-white">Browse Scenarios</h3>
-                        <p class="text-sm text-primary-600 dark:text-primary-400">Discover new challenges</p>
+                        <h3 class="font-semibold text-primary-900 dark:text-white text-sm sm:text-base">Browse Scenarios</h3>
+                        <p class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">Discover new challenges</p>
                     </div>
                 </div>
             </a>
             
-            <a href="{% url 'srs_document' %}" class="modern-card p-6 group hover:scale-105 transition-all duration-300">
+            <a href="{% url 'srs_document' %}" class="modern-card p-4 sm:p-6 group hover:scale-105 transition-all duration-300">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-file-contract text-white"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg sm:rounded-xl flex items-center justify-center mr-3 sm:mr-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-file-contract text-white text-sm sm:text-base"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-primary-900 dark:text-white">SRS Templates</h3>
-                        <p class="text-sm text-primary-600 dark:text-primary-400">Documentation guides</p>
+                        <h3 class="font-semibold text-primary-900 dark:text-white text-sm sm:text-base">SRS Templates</h3>
+                        <p class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">Documentation guides</p>
                     </div>
                 </div>
             </a>
             
-            <a href="{% url 'notifications' %}" class="modern-card p-6 group hover:scale-105 transition-all duration-300">
+            <a href="{% url 'notifications' %}" class="modern-card p-4 sm:p-6 group hover:scale-105 transition-all duration-300">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                        <i class="fas fa-comments text-white"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center mr-3 sm:mr-4 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-comments text-white text-sm sm:text-base"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-primary-900 dark:text-white">Recent Feedback</h3>
-                        <p class="text-sm text-primary-600 dark:text-primary-400">View instructor comments</p>
+                        <h3 class="font-semibold text-primary-900 dark:text-white text-sm sm:text-base">Recent Feedback</h3>
+                        <p class="text-xs sm:text-sm text-primary-600 dark:text-primary-400">View instructor comments</p>
                     </div>
                 </div>
             </a>
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             <!-- Active Scenarios -->
             <div class="lg:col-span-2">
-                <div class="modern-card p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-xl font-bold text-primary-900 dark:text-white">Continue Learning</h2>
-                        <a href="{% url 'scenario_list' %}" class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium">
+                <div class="modern-card p-4 sm:p-6">
+                    <div class="flex items-center justify-between mb-4 sm:mb-6">
+                        <h2 class="text-lg sm:text-xl font-bold text-primary-900 dark:text-white">Continue Learning</h2>
+                        <a href="{% url 'scenario_list' %}" class="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium">
                             View all →
                         </a>
                     </div>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                         {% for submission in active_submissions|slice:":3" %}
-                        <div class="border border-primary-200 dark:border-primary-700 rounded-xl p-4 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors group">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <h3 class="font-semibold text-primary-900 dark:text-white mb-2 group-hover:text-primary-700 dark:group-hover:text-primary-300">
+                        <div class="border border-primary-200 dark:border-primary-700 rounded-lg sm:rounded-xl p-3 sm:p-4 hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors group">
+                            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                                <div class="flex-1 mb-3 sm:mb-0">
+                                    <h3 class="font-semibold text-primary-900 dark:text-white mb-2 group-hover:text-primary-700 dark:group-hover:text-primary-300 text-sm sm:text-base">
                                         {{ submission.scenario.title }}
                                     </h3>
-                                    <p class="text-sm text-primary-600 dark:text-primary-400 mb-3 line-clamp-2">
+                                    <p class="text-xs sm:text-sm text-primary-600 dark:text-primary-400 mb-2 sm:mb-3 line-clamp-2">
                                         {{ submission.scenario.description|truncatechars:100 }}
                                     </p>
-                                    <div class="flex items-center space-x-4 text-xs text-primary-500 dark:text-primary-400">
+                                    <div class="flex flex-wrap items-center space-x-2 sm:space-x-4 text-xs text-primary-500 dark:text-primary-400">
                                         <span class="flex items-center">
                                             <i class="fas fa-clock mr-1"></i>
                                             {{ submission.scenario.estimated_time|default:"2-3 hours" }}
@@ -112,24 +112,24 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="ml-4">
+                                <div class="sm:ml-4">
                                     <a href="{% url 'scenario_detail' submission.scenario.pk %}" 
-                                       class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors group-hover:scale-105">
-                                        <i class="fas fa-play mr-2"></i>
+                                       class="inline-flex items-center justify-center w-full sm:w-auto px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-primary-700 transition-colors group-hover:scale-105">
+                                        <i class="fas fa-play mr-1 sm:mr-2"></i>
                                         Continue
                                     </a>
                                 </div>
                             </div>
                         </div>
                         {% empty %}
-                        <div class="text-center py-12">
-                            <div class="w-16 h-16 bg-primary-100 dark:bg-primary-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-play text-primary-600 dark:text-primary-400 text-2xl"></i>
+                        <div class="text-center py-8 sm:py-12">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-primary-100 dark:bg-primary-800/30 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                                <i class="fas fa-play text-primary-600 dark:text-primary-400 text-lg sm:text-2xl"></i>
                             </div>
-                            <h3 class="text-lg font-semibold text-primary-900 dark:text-white mb-2">No Active Scenarios</h3>
-                            <p class="text-primary-600 dark:text-primary-400 mb-4">Start a new scenario to begin your learning journey</p>
+                            <h3 class="text-base sm:text-lg font-semibold text-primary-900 dark:text-white mb-2">No Active Scenarios</h3>
+                            <p class="text-sm text-primary-600 dark:text-primary-400 mb-3 sm:mb-4">Start a new scenario to begin your learning journey</p>
                             <a href="{% url 'scenario_list' %}" 
-                               class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors">
+                               class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors text-sm">
                                 <i class="fas fa-search mr-2"></i>
                                 Browse Scenarios
                             </a>
@@ -140,10 +140,10 @@
             </div>
             
             <!-- Sidebar -->
-            <div class="space-y-6">
+            <div class="space-y-4 sm:space-y-6">
                 <!-- Learning Progress -->
-                <div class="modern-card p-6">
-                    <h3 class="text-lg font-semibold text-primary-900 dark:text-white mb-4">Learning Progress</h3>
+                <div class="modern-card p-4 sm:p-6">
+                    <h3 class="text-base sm:text-lg font-semibold text-primary-900 dark:text-white mb-3 sm:mb-4">Learning Progress</h3>
                     
                     <div class="space-y-4">
                         <div>

@@ -33,11 +33,11 @@ ALLOWED_HOSTS=your-project.railway.app
 2. **Sign up with GitHub**
 3. **Click "New Web Service"**
 4. **Connect your GitHub repo**
-5. **Render automatically detects Django**
+5. **IMPORTANT: Manual Configuration Required**
 
-### Settings in Render:
-- **Build Command:** `pip install -r requirements.txt`
-- **Start Command:** `gunicorn requirements_lab.wsgi:application`
+### Settings in Render (COPY THESE EXACTLY):
+- **Build Command:** `pip install --upgrade pip && pip install -r requirements.txt`
+- **Start Command:** `python manage.py migrate && python manage.py collectstatic --noinput && gunicorn requirements_lab.wsgi:application`
 
 ### Environment Variables:
 ```
@@ -45,6 +45,8 @@ DEBUG=False
 SECRET_KEY=your-super-secret-key-here
 ALLOWED_HOSTS=your-project.onrender.com
 ```
+
+**⚠️ CRITICAL:** Make sure you paste the exact start command above, not the default `gunicorn app:app`
 
 ---
 

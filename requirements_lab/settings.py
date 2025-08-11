@@ -30,6 +30,10 @@ _vercel_url = os.environ.get('VERCEL_URL')  # e.g. re-vlab-abc123.vercel.app
 if _vercel_url:
     if _vercel_url not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(_vercel_url)
+    # Also add with https:// for CSRF
+    vercel_https = f"https://{_vercel_url}"
+    if vercel_https not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(vercel_https)
 
 # Add Vercel domains
 VERCEL_DOMAINS = [
@@ -186,8 +190,9 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# Vercel-specific static files configuration
-if os.environ.get('VERCEL'):
+# Platform-specific static files configuration
+if os.environ.get('VERCEL_URL'):
+    # Vercel deployment
     STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 elif os.environ.get('RENDER'):

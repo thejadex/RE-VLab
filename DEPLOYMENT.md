@@ -5,84 +5,89 @@ This project is now configured for automatic deployment to Vercel using GitHub A
 ## ✅ Completed Setup
 
 1. **Branches Merged**: All feature branches have been merged to main
-2. **GitHub Actions Workflows**: Created automated deployment workflows
-3. **Vercel Configuration**: Added `vercel.json` for optimal deployment settings
+2. **Vercel Configuration**: Added `vercel.json` for optimal deployment settings
+3. **Build Script**: Created `build_files.sh` for proper Django deployment
+4. **Django Settings**: Updated for multi-platform compatibility
 
 ## 🔧 Required Configuration
 
-To complete the Vercel deployment setup, you need to add the following secrets to your GitHub repository:
+To complete the Vercel deployment setup, you need to add environment variables in your Vercel dashboard:
 
-### Step 1: Get Vercel Credentials
+### Step 1: Create Vercel Project
 
 1. **Create Vercel Account**: Sign up at [vercel.com](https://vercel.com)
-2. **Get Vercel Token**: 
-   - Go to [Vercel Tokens](https://vercel.com/account/tokens)
-   - Create a new token and copy it
+2. **Import GitHub Repository**: 
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Click "Add New Project"
+   - Import your GitHub repository
 
-3. **Link Your Project**:
-   ```bash
-   npm install -g vercel
-   vercel login
-   vercel link
-   ```
-   
-4. **Get Project IDs**: After linking, check `.vercel/project.json` for:
-   - `projectId`
-   - `orgId`
+### Step 2: Configure Environment Variables
 
-### Step 2: Add GitHub Secrets
+In your Vercel project dashboard, go to **Settings > Environment Variables** and add:
 
-In your GitHub repository, go to **Settings > Secrets and Variables > Actions** and add:
+**Required Variables:**
+- `SECRET_KEY`: Your Django secret key (generate a new one for production)
+- `DEBUG`: Set to `False` for production
+- `ALLOWED_HOSTS`: Your Vercel domain (e.g., `your-app.vercel.app`)
 
-- `VERCEL_TOKEN`: Your Vercel token
-- `VERCEL_PROJECT_ID`: Project ID from `.vercel/project.json`
-- `VERCEL_ORG_ID`: Organization ID from `.vercel/project.json`
+**Optional Variables:**
+- `DATABASE_URL`: If using external database
+- `POSTGRES_URL`: If using Vercel Postgres
 
-### Step 3: Trigger Deployment
+### Step 3: Deploy
 
-Once secrets are configured, deployments will happen automatically:
+Once configured, Vercel will automatically deploy when you:
+- Push to `main` branch → Production deployment
+- Push to any other branch → Preview deployment
 
-- **Production**: Pushes to `main` branch → Production deployment
-- **Preview**: Pushes to any other branch → Preview deployment
+## � Common Deployment Issues & Solutions
 
-## 🚀 Deployment Workflows
+### Issue 1: Build Timeout
+**Error**: "Build exceeded maximum duration"
+**Solution**: 
+```bash
+# In vercel.json, increase build timeout
+{
+  "builds": [{
+    "src": "build_files.sh",
+    "use": "@vercel/static-build",
+    "config": { "maxDuration": 300 }
+  }]
+}
+```
 
-### Production Deployment (`.github/workflows/deploy.yml`)
-- Triggers on push to `main` branch
-- Builds and deploys to Vercel production environment
-- Uses `--prod` flag for production deployment
+### Issue 2: Static Files Not Found
+**Error**: "Static files returning 404"
+**Solution**: Ensure `vercel.json` routes are correct:
+```json
+{
+  "routes": [
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/(.*)", "dest": "requirements_lab/wsgi.py" }
+  ]
+}
+```
 
-### Preview Deployment (`.github/workflows/preview.yml`)
-- Triggers on push to any branch except `main`
-- Creates preview deployments for testing
-- Perfect for reviewing changes before merging
+### Issue 3: Database Connection
+**Error**: "Database connection failed"
+**Solution**: 
+- Use SQLite for simple deployments (default)
+- Or set up Vercel Postgres in your project dashboard
+- Add `DATABASE_URL` environment variable if using external DB
 
-## 📁 Project Structure
+### Issue 4: Module Import Errors
+**Error**: "No module named 'requirements_lab'"
+**Solution**: Verify your project structure and WSGI configuration
 
-This is a Next.js application with Django backend components. The deployment configuration optimizes for:
+### Issue 5: ALLOWED_HOSTS Error
+**Error**: "DisallowedHost"
+**Solution**: 
+- Set `ALLOWED_HOSTS` environment variable
+- Or let Django auto-detect from `VERCEL_URL`
 
-- **Frontend**: Next.js application
-- **Build Process**: Automatic framework detection
-- **Output**: Optimized static files and serverless functions
+## 🔍 Debugging Deployment
 
-## 🔍 Monitoring Deployments
-
-1. **GitHub Actions**: Check the Actions tab in your repository
-2. **Vercel Dashboard**: Monitor deployments at [vercel.com/dashboard](https://vercel.com/dashboard)
-3. **Deployment URLs**: Each deployment gets a unique URL for testing
-
-## 🆘 Troubleshooting
-
-If deployments fail:
-
-1. Check GitHub Actions logs in the Actions tab
-2. Verify all secrets are correctly set
-3. Ensure your project builds successfully locally with `npm run build`
-4. Check Vercel logs in the Vercel dashboard
-
-## 🎯 Next Steps
-
-1. Add the required GitHub secrets
-2. Make a small change and push to test the deployment
-3. Set up custom domain in Vercel dashboard (optional)
-4. Configure environment variables in Vercel for production
+1. **Check Build Logs**: View detailed logs in Vercel dashboard
+2. **Test Locally**: Run `python debug_django.py` to test Django setup
+3. **Verify Configuration**: Run `python quick_compatibility_check.py`
+4. **Check Requirements**: Ensure all packages are in `requirements.txt`

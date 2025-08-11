@@ -2,15 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "requirements_lab/wsgi.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
-    },
-    {
       "src": "build_files.sh",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "staticfiles_build/static"
+      }
+    },
+    {
+      "src": "requirements_lab/wsgi.py",
+      "use": "@vercel/python",
+      "config": { 
+        "maxLambdaSize": "15mb", 
+        "runtime": "python3.9"
       }
     }
   ],
@@ -23,14 +26,5 @@
       "src": "/(.*)",
       "dest": "requirements_lab/wsgi.py"
     }
-  ],
-  "env": {
-    "DJANGO_SETTINGS_MODULE": "requirements_lab.settings",
-    "PYTHONPATH": "/var/task"
-  },
-  "functions": {
-    "requirements_lab/wsgi.py": {
-      "runtime": "python3.9"
-    }
-  }
+  ]
 }

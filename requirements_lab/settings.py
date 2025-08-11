@@ -12,7 +12,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-secret-key-here-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# Force DEBUG=False on Vercel
+if os.environ.get('VERCEL_URL'):
+    DEBUG = False
+else:
+    DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Robust host parsing
 _raw_hosts = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1')
@@ -46,6 +50,15 @@ for domain in VERCEL_DOMAINS:
     if domain not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(domain)
 
+# Add wildcard for Vercel preview URLs
+if os.environ.get('VERCEL_URL'):
+    # Add the exact Vercel URL
+    vercel_url = os.environ.get('VERCEL_URL')
+    if vercel_url and vercel_url not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(vercel_url)
+    # Add wildcard patterns for Vercel
+    ALLOWED_HOSTS.extend(['*'])  # Allow all hosts on Vercel
+
 # Ensure we always have fallback hosts
 if not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app']
@@ -74,7 +87,7 @@ MIDDLEWARE = [
 ]
 
 # Add WhiteNoise only for non-Vercel deployments
-if not (os.environ.get('VERCEL_URL') or os.environ.get('VERCEL')):
+if not os.environ.get('VERCEL_URL'):
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 ROOT_URLCONF = 'requirements_lab.urls'
@@ -155,11 +168,21 @@ _raw_csrf = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
 if _raw_csrf:
     CSRF_TRUSTED_ORIGINS = [o.strip() for o in _raw_csrf.split(',') if o.strip()]
 else:
-    CSRF_TRUSTED_ORIGINS = [f"https://{h}" for h in ALLOWED_HOSTS if h not in ('localhost', '127.0.0.1')]
+    CSRF_TRUSTED_ORIGINS = [f"https://{h}" for h in ALLOWED_HOSTS if h not in ('localhost', '127.0.0.1', '*')]
+
+# Add Vercel domains to CSRF trusted origins
+if os.environ.get('VERCEL_URL'):
+    vercel_url = os.environ.get('VERCEL_URL')
+    CSRF_TRUSTED_ORIGINS.extend([
+        f"https://{vercel_url}",
+        "https://*.vercel.app",
+        "https://*.vercel.com"
+    ])
 
 
 # Security headers & HTTPS settings only when not in DEBUG
-if not DEBUG:
+if not DEBUG and not os.environ.get('VERCEL_URL'):
+    # Don't force SSL redirect on Vercel - it handles SSL automatically
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -170,6 +193,11 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
+elif os.environ.get('VERCEL_URL'):
+    # Vercel-specific security settings
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -195,23 +223,16 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
 
-# Platform-specific static files configuration
-if os.environ.get('VERCEL_URL') or os.environ.get('VERCEL'):
-    # Vercel deployment - simplified static files
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Simplified static files for Vercel
+if os.environ.get('VERCEL_URL'):
+    # Vercel deployment
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    # Force collect static files in the right location
-    os.makedirs(BASE_DIR / 'staticfiles', exist_ok=True)
-elif os.environ.get('RENDER'):
-    # Explicit Render configuration (maintains existing behavior)
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_DIRS = []  # Don't use STATICFILES_DIRS on Vercel
 else:
-    # Default configuration (works for Render and local development)
+    # Local/Render deployment  
+    STATICFILES_DIRS = [BASE_DIR / 'static']
     STATIC_ROOT = BASE_DIR / 'staticfiles'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 

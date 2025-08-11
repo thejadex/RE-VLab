@@ -22,7 +22,12 @@
   ],
   "env": {
     "DEBUG": "False",
-    "ALLOWED_HOSTS": ".vercel.app",
-    "SECRET_KEY": "vercel-production-secret-key-change-this-in-dashboard"
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "functions": {
+    "requirements_lab/wsgi.py": {
+      "runtime": "python3.9"
+    }
   }
 }

@@ -35,14 +35,20 @@ if _vercel_url:
     if vercel_https not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(vercel_https)
 
-# Add Vercel domains
+# Add Vercel domains and common patterns
 VERCEL_DOMAINS = [
     '.vercel.app',
-    '.vercel.com'
+    '.vercel.com',
+    'localhost',
+    '127.0.0.1'
 ]
 for domain in VERCEL_DOMAINS:
     if domain not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(domain)
+
+# Ensure we always have fallback hosts
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app']
 
 # Application definition
 INSTALLED_APPS = [
@@ -68,7 +74,7 @@ MIDDLEWARE = [
 ]
 
 # Add WhiteNoise only for non-Vercel deployments
-if not os.environ.get('VERCEL_URL'):
+if not (os.environ.get('VERCEL_URL') or os.environ.get('VERCEL')):
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 ROOT_URLCONF = 'requirements_lab.urls'
@@ -194,10 +200,12 @@ STATICFILES_DIRS = [
 ]
 
 # Platform-specific static files configuration
-if os.environ.get('VERCEL_URL'):
-    # Vercel deployment - use simple static files setup
-    STATIC_ROOT = BASE_DIR / 'static'
+if os.environ.get('VERCEL_URL') or os.environ.get('VERCEL'):
+    # Vercel deployment - simplified static files
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    # Force collect static files in the right location
+    os.makedirs(BASE_DIR / 'staticfiles', exist_ok=True)
 elif os.environ.get('RENDER'):
     # Explicit Render configuration (maintains existing behavior)
     STATIC_ROOT = BASE_DIR / 'staticfiles'

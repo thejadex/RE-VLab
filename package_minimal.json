@@ -1,0 +1,6 @@
+{
+  "name": "re-vlab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Django application for Vercel deployment"
+}

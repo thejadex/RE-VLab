@@ -1,8 +1,28 @@
 {
+  "version": 2,
   "builds": [
     {
       "src": "requirements_lab/wsgi.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9"
+      }
     }
-  ]
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "requirements_lab/wsgi.py"
+    }
+  ],
+  "env": {
+    "DEBUG": "False",
+    "ALLOWED_HOSTS": ".vercel.app",
+    "SECRET_KEY": "vercel-production-secret-key-change-this-in-dashboard"
+  }
 }

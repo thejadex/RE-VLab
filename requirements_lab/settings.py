@@ -12,9 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-secret-key-here-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Force DEBUG=False on Vercel
+# Force DEBUG=False on Vercel, but enable for debugging 500 errors temporarily
 if os.environ.get('VERCEL_URL'):
-    DEBUG = False
+    DEBUG = True  # Temporarily enable to see error details
+    ALLOWED_HOSTS = ['*']  # Allow all hosts on Vercel
 else:
     DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
@@ -113,48 +114,58 @@ TEMPLATES = [
 WSGI_APPLICATION = 'requirements_lab.wsgi.application'
 
 # Database
-# Check for Vercel Postgres first, then other production database URLs
-POSTGRES_URL = os.environ.get('POSTGRES_URL')
-DATABASE_URL = os.environ.get('DATABASE_URL')
-
-if POSTGRES_URL:
-    # Vercel Postgres
-    try:
-        import dj_database_url
-        DATABASES = {
-            'default': dj_database_url.parse(POSTGRES_URL, conn_max_age=600, ssl_require=True)
-        }
-    except ImportError:
-        # Fallback to SQLite if dj_database_url is not available
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
-elif DATABASE_URL:
-    # Other production database URLs (Railway, Heroku, etc.)
-    try:
-        import dj_database_url
-        DATABASES = {
-            'default': dj_database_url.parse(DATABASE_URL)
-        }
-    except ImportError:
-        # Fallback to SQLite if dj_database_url is not available
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
-else:
-    # Default SQLite for local development
+# Simplified database configuration for Vercel
+if os.environ.get('VERCEL_URL'):
+    # Force SQLite on Vercel for simplicity
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': '/tmp/db.sqlite3',  # Use /tmp for Vercel
         }
     }
+else:
+    # Check for production database URLs for other platforms
+    POSTGRES_URL = os.environ.get('POSTGRES_URL')
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    
+    if POSTGRES_URL:
+        # Vercel Postgres
+        try:
+            import dj_database_url
+            DATABASES = {
+                'default': dj_database_url.parse(POSTGRES_URL, conn_max_age=600, ssl_require=True)
+            }
+        except ImportError:
+            # Fallback to SQLite if dj_database_url is not available
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': BASE_DIR / 'db.sqlite3',
+                }
+            }
+    elif DATABASE_URL:
+        # Other production database URLs (Railway, Heroku, etc.)
+        try:
+            import dj_database_url
+            DATABASES = {
+                'default': dj_database_url.parse(DATABASE_URL)
+            }
+        except ImportError:
+            # Fallback to SQLite if dj_database_url is not available
+            DATABASES = {
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': BASE_DIR / 'db.sqlite3',
+                }
+            }
+    else:
+        # Default SQLite for local development
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 CACHES = {
     'default': {
@@ -194,10 +205,11 @@ if not DEBUG and not os.environ.get('VERCEL_URL'):
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
 elif os.environ.get('VERCEL_URL'):
-    # Vercel-specific security settings
+    # Minimal security settings for Vercel (debugging)
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    # Disable secure cookies for debugging
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -242,6 +254,28 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging configuration for debugging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"

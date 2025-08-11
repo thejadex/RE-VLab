@@ -24,10 +24,5 @@
     "DEBUG": "False",
     "PYTHONDONTWRITEBYTECODE": "1",
     "PYTHONUNBUFFERED": "1"
-  },
-  "functions": {
-    "requirements_lab/wsgi.py": {
-      "runtime": "python3.9"
-    }
   }
 }

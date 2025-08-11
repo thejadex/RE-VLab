@@ -2,6 +2,16 @@
 
 A comprehensive web-based virtual laboratory for Requirements Engineering education, designed to provide students with hands-on experience in requirements elicitation, analysis, and documentation through interactive scenarios.
 
+## 🚀 Quick Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthejadex%2FRE-VLab&env=SECRET_KEY,DEBUG&envDescription=Required%20environment%20variables%20for%20Django&envLink=https%3A%2F%2Fdocs.djangoproject.com%2Fen%2F4.2%2Fref%2Fsettings%2F&project-name=re-vlab&repository-name=RE-VLab)
+
+**Environment Variables Required:**
+- `SECRET_KEY`: Your Django secret key (generate a long random string)
+- `DEBUG`: Set to `False` for production
+
+**Default Admin Login:** admin/admin123
+
 ## 🎯 Project Overview
 
 RE VLab is an innovative educational platform that transforms traditional requirements engineering learning into an immersive, interactive experience. The system provides students with realistic software project scenarios where they can practice requirements gathering, classification, and documentation under expert guidance.

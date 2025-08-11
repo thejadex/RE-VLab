@@ -22,6 +22,7 @@ if os.environ.get('VERCEL_URL') or os.environ.get('VERCEL'):
     try:
         from django.core.management import execute_from_command_line
         from django.db import connection
+        from django.contrib.auth.models import User
         import django
         django.setup()
         
@@ -32,11 +33,53 @@ if os.environ.get('VERCEL_URL') or os.environ.get('VERCEL'):
                 # Run migrations
                 execute_from_command_line(['manage.py', 'migrate', '--run-syncdb'])
                 
-        # Run setup_lab command to create initial data
+        # Create test users directly
         try:
-            execute_from_command_line(['manage.py', 'setup_lab'])
+            # Create admin user
+            admin_user, created = User.objects.get_or_create(
+                username='admin',
+                defaults={
+                    'email': 'admin@example.com',
+                    'first_name': 'Admin',
+                    'last_name': 'User',
+                    'is_staff': True,
+                    'is_superuser': True
+                }
+            )
+            admin_user.set_password('admin123')
+            admin_user.is_staff = True
+            admin_user.is_superuser = True
+            admin_user.save()
+            
+            # Create admin profile
+            from lab.models import UserProfile
+            UserProfile.objects.get_or_create(
+                user=admin_user,
+                defaults={'role': 'admin'}
+            )
+            
+            # Create student user
+            student_user, created = User.objects.get_or_create(
+                username='student',
+                defaults={
+                    'email': 'student@example.com',
+                    'first_name': 'Test',
+                    'last_name': 'Student'
+                }
+            )
+            student_user.set_password('student123')
+            student_user.save()
+            
+            # Create student profile
+            UserProfile.objects.get_or_create(
+                user=student_user,
+                defaults={'role': 'student', 'student_id': 'STU001'}
+            )
+            
+            print("✓ Test users created: admin/admin123, student/student123")
+            
         except Exception as e:
-            print(f"Setup lab command error: {e}")
+            print(f"User creation error: {e}")
             
     except Exception as e:
         print(f"Database initialization error: {e}")

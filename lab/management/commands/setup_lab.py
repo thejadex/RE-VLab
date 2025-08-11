@@ -24,6 +24,18 @@ class Command(BaseCommand):
             admin_user.save()
             UserProfile.objects.create(user=admin_user, role='admin')
             self.stdout.write(f'✓ Created admin user: admin/admin123')
+        else:
+            # Ensure password is set even if user exists
+            admin_user.set_password('admin123')
+            admin_user.is_staff = True
+            admin_user.is_superuser = True
+            admin_user.save()
+            # Ensure UserProfile exists
+            UserProfile.objects.get_or_create(
+                user=admin_user,
+                defaults={'role': 'admin'}
+            )
+            self.stdout.write(f'✓ Updated admin user: admin/admin123')
         
         # Create sample student
         student_user, created = User.objects.get_or_create(
@@ -39,6 +51,16 @@ class Command(BaseCommand):
             student_user.save()
             UserProfile.objects.create(user=student_user, role='student', student_id='STU001')
             self.stdout.write(f'✓ Created student user: student/student123')
+        else:
+            # Ensure password is set even if user exists
+            student_user.set_password('student123')
+            student_user.save()
+            # Ensure UserProfile exists
+            UserProfile.objects.get_or_create(
+                user=student_user,
+                defaults={'role': 'student', 'student_id': 'STU001'}
+            )
+            self.stdout.write(f'✓ Updated student user: student/student123')
         
         # Create sample scenario
         scenario, created = Scenario.objects.get_or_create(

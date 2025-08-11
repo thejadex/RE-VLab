@@ -19,10 +19,5 @@
       "src": "/(.*)",
       "dest": "requirements_lab/wsgi.py"
     }
-  ],
-  "env": {
-    "DEBUG": "False",
-    "PYTHONDONTWRITEBYTECODE": "1",
-    "PYTHONUNBUFFERED": "1"
-  }
+  ]
 }

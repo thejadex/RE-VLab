@@ -59,7 +59,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -67,6 +66,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Add WhiteNoise only for non-Vercel deployments
+if not os.environ.get('VERCEL_URL'):
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 ROOT_URLCONF = 'requirements_lab.urls'
 
@@ -192,8 +195,8 @@ STATICFILES_DIRS = [
 
 # Platform-specific static files configuration
 if os.environ.get('VERCEL_URL'):
-    # Vercel deployment
-    STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
+    # Vercel deployment - use simple static files setup
+    STATIC_ROOT = BASE_DIR / 'static'
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 elif os.environ.get('RENDER'):
     # Explicit Render configuration (maintains existing behavior)

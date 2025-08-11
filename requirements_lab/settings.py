@@ -25,6 +25,21 @@ if _render_url:
     if _render_host and _render_host not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(_render_host)
 
+# Auto-include Vercel provided hostname if available
+_vercel_url = os.environ.get('VERCEL_URL')  # e.g. re-vlab-abc123.vercel.app
+if _vercel_url:
+    if _vercel_url not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_vercel_url)
+
+# Add Vercel domains
+VERCEL_DOMAINS = [
+    '.vercel.app',
+    '.vercel.com'
+]
+for domain in VERCEL_DOMAINS:
+    if domain not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(domain)
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -72,9 +87,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'requirements_lab.wsgi.application'
 
 # Database
-# Check for production database URL (Railway, Heroku, etc.)
+# Check for Vercel Postgres first, then other production database URLs
+POSTGRES_URL = os.environ.get('POSTGRES_URL')
 DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
+
+if POSTGRES_URL:
+    # Vercel Postgres
+    try:
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.parse(POSTGRES_URL, conn_max_age=600, ssl_require=True)
+        }
+    except ImportError:
+        # Fallback to SQLite if dj_database_url is not available
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+elif DATABASE_URL:
+    # Other production database URLs (Railway, Heroku, etc.)
     try:
         import dj_database_url
         DATABASES = {
@@ -152,8 +185,19 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Vercel-specific static files configuration
+if os.environ.get('VERCEL'):
+    STATIC_ROOT = BASE_DIR / 'staticfiles_build' / 'static'
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+elif os.environ.get('RENDER'):
+    # Explicit Render configuration (maintains existing behavior)
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    # Default configuration (works for Render and local development)
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'

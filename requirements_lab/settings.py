@@ -14,7 +14,16 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-secret-key-here-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Robust host parsing
+_raw_hosts = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(',') if h.strip()]
+
+# Auto-include Render provided hostname if available
+_render_url = os.environ.get('RENDER_EXTERNAL_URL')  # e.g. https://re-vlab.onrender.com
+if _render_url:
+    _render_host = _render_url.replace('https://', '').replace('http://', '').strip('/')
+    if _render_host and _render_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_render_host)
 
 # Application definition
 INSTALLED_APPS = [
@@ -95,6 +104,27 @@ CACHES = {
     }
 }
 
+# CSRF trusted origins (for Render / Vercel frontends) - supply comma-separated list in env
+_raw_csrf = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if _raw_csrf:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _raw_csrf.split(',') if o.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = [f"https://{h}" for h in ALLOWED_HOSTS if h not in ('localhost', '127.0.0.1')]
+
+
+# Security headers & HTTPS settings only when not in DEBUG
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -123,8 +153,6 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# WhiteNoise configuration for serving static files in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files

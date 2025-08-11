@@ -7,16 +7,16 @@
     <!-- Navigation Header -->
     <nav class="nav-glass fixed w-full top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+            <div class="flex justify-between items-center h-16 max-sm:h-14">
                 <!-- Left side -->
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 max-sm:space-x-3">
                     <!-- Logo -->
-                    <a href="{% url 'home' %}" class="flex items-center space-x-3 group">
+                    <a href="{% url 'home' %}" class="flex items-center space-x-3 group max-sm:space-x-2">
                         <div class="relative">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                                <i class="fas fa-flask text-white text-lg"></i>
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 max-sm:w-8 max-sm:h-8 max-sm:rounded-xl">
+                                <i class="fas fa-flask text-white text-lg max-sm:text-sm"></i>
                             </div>
-                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-green-500 rounded-full animate-pulse"></div>
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-green-500 rounded-full animate-pulse max-sm:w-3 max-sm:h-3"></div>
                         </div>
                         <div class="hidden sm:block">
                             <h1 class="text-xl font-bold text-primary-900 dark:text-white">RE VLab</h1>
@@ -26,12 +26,12 @@
                 </div>
                 
                 <!-- Right side -->
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 max-sm:space-x-2">
                     <!-- Theme Toggle -->
                     <button onclick="toggleTheme()" 
-                            class="p-3 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800/50 rounded-xl transition-colors">
-                        <i class="fas fa-moon dark:hidden text-lg"></i>
-                        <i class="fas fa-sun hidden dark:inline text-lg"></i>
+                            class="p-3 text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-800/50 rounded-xl transition-colors max-sm:p-2">
+                        <i class="fas fa-moon dark:hidden text-lg max-sm:text-base"></i>
+                        <i class="fas fa-sun hidden dark:inline text-lg max-sm:text-base"></i>
                     </button>
                     
                     <!-- Guest Navigation -->
@@ -43,8 +43,8 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="relative overflow-hidden pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-12 sm:pb-16">
+    <div class="relative overflow-hidden pt-16 max-sm:pt-14">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-20 pb-12 sm:pb-16 max-sm:pt-8">
             <div class="text-center">
                 <div class="mb-6 sm:mb-8">
                     <span class="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs sm:text-sm font-medium">

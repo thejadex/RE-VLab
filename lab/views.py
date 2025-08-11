@@ -52,43 +52,6 @@ def check_admin_permission(request):
         return False, user_profile
 
 def home(request):
-    # Initialize database and create admin user for Vercel
-    if os.environ.get('VERCEL_URL') or 'vercel' in str(request.get_host()).lower():
-        try:
-            from django.core.management import execute_from_command_line
-            from django.contrib.auth import get_user_model
-            from django.db import connection
-            
-            # Check if tables exist
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='auth_user';")
-                if not cursor.fetchone():
-                    # Run migrations
-                    execute_from_command_line(['manage.py', 'migrate', '--run-syncdb'])
-            
-            # Create admin user if it doesn't exist
-            User = get_user_model()
-            if not User.objects.filter(username='admin').exists():
-                admin_user = User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
-                
-                # Create admin profile
-                from .models import UserProfile
-                UserProfile.objects.get_or_create(
-                    user=admin_user,
-                    defaults={'role': 'admin', 'full_name': 'Administrator'}
-                )
-                
-            # Create test student if it doesn't exist
-            if not User.objects.filter(username='student').exists():
-                student_user = User.objects.create_user('student', 'student@example.com', 'student123')
-                UserProfile.objects.get_or_create(
-                    user=student_user,
-                    defaults={'role': 'student', 'full_name': 'Test Student'}
-                )
-                
-        except Exception as e:
-            print(f"Database initialization error: {e}")
-    
     # Redirect authenticated users to dashboard
     if request.user.is_authenticated:
         return redirect('dashboard')

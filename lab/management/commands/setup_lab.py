@@ -27,9 +27,9 @@ class Command(BaseCommand):
         
         # Create sample student
         student_user, created = User.objects.get_or_create(
-            username='student1',
+            username='student',
             defaults={
-                'email': 'student1@example.com',
+                'email': 'student@example.com',
                 'first_name': 'John',
                 'last_name': 'Doe'
             }
@@ -38,7 +38,7 @@ class Command(BaseCommand):
             student_user.set_password('student123')
             student_user.save()
             UserProfile.objects.create(user=student_user, role='student', student_id='STU001')
-            self.stdout.write(f'✓ Created student user: student1/student123')
+            self.stdout.write(f'✓ Created student user: student/student123')
         
         # Create sample scenario
         scenario, created = Scenario.objects.get_or_create(
@@ -68,4 +68,4 @@ The target audience includes tech-savvy millennials and Gen-X customers who pref
         self.stdout.write(self.style.SUCCESS('✓ Setup complete!'))
         self.stdout.write('You can now login with:')
         self.stdout.write('  Admin: admin/admin123')
-        self.stdout.write('  Student: student1/student123')
+        self.stdout.write('  Student: student/student123')
